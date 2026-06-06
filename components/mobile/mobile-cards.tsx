@@ -8,15 +8,15 @@ export function MobileBriefingCards() {
     <>
       {getDailyBriefings().map((briefing) => (
         <article key={briefing.id} className="glass-panel rounded-lg p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-cyan-100">{briefing.scheduledFor}</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-yellow-100">{briefing.scheduledFor}</p>
           <h2 className="mt-2 text-xl font-semibold text-white">{briefing.title}</h2>
-          <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-slate-300">
+          <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-zinc-300">
             <p>Revenue: {briefing.revenue}</p>
             <p>Bookings: {briefing.newBookings}</p>
             <p>Missed: {briefing.missedCalls}</p>
             <p>Leads: {briefing.newLeads}</p>
           </div>
-          <p className="mt-3 text-sm text-slate-400">{briefing.systemHealth}. {briefing.dataLabel}.</p>
+          <p className="mt-3 text-sm text-zinc-400">{briefing.systemHealth}. {briefing.dataLabel}.</p>
         </article>
       ))}
     </>
@@ -42,7 +42,7 @@ export function MobileActionHistory() {
     <section className="glass-panel rounded-lg p-4">
       <h2 className="text-lg font-semibold text-white">Action history</h2>
       {getScheduledAutomations().map((job) => (
-        <p key={job.id} className="mt-3 rounded-lg border border-cyan-300/15 bg-cyan-400/5 p-3 text-sm text-slate-300">
+        <p key={job.id} className="mt-3 rounded-lg border border-yellow-300/15 bg-yellow-400/5 p-3 text-sm text-zinc-300">
           {job.name}: {job.status}
         </p>
       ))}
@@ -55,7 +55,7 @@ export function MobileSecurityPolicy() {
     <section className="glass-panel rounded-lg p-4">
       <h2 className="text-lg font-semibold text-white">Autonomy policy</h2>
       {autonomyPolicySummary().map((item) => (
-        <p key={item} className="mt-2 text-sm text-slate-300">{item}</p>
+        <p key={item} className="mt-2 text-sm text-zinc-300">{item}</p>
       ))}
     </section>
   );
@@ -66,7 +66,7 @@ export function MobileBotStatus() {
     <section className="glass-panel rounded-lg p-4">
       <h2 className="text-lg font-semibold text-white">Bot connectors</h2>
       {getBotConnectorStatuses().map((bot) => (
-        <p key={bot.name} className="mt-2 text-sm text-slate-300">{bot.name}: {bot.detail}</p>
+        <p key={bot.name} className="mt-2 text-sm text-zinc-300">{bot.name}: {bot.detail}</p>
       ))}
     </section>
   );

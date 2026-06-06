@@ -11,12 +11,12 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent ? (
           <div className="space-y-2">
             <p className="text-sm text-white">{agent.mission.command}</p>
-            <p className="text-xs text-slate-400">{agent.mission.type} - {agent.mission.toolRoute.toolName}</p>
+            <p className="text-xs text-zinc-400">{agent.mission.type} - {agent.mission.toolRoute.toolName}</p>
             <div className="grid gap-2">
               {agent.mission.plan.map((step) => (
-                <div key={step.id} className="rounded-lg border border-slate-600/35 bg-slate-950/40 p-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100">{step.label}</p>
-                  <p className="mt-1 text-xs text-slate-400">{step.status}: {step.detail}</p>
+                <div key={step.id} className="rounded-lg border border-zinc-600/35 bg-black/40 p-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-yellow-100">{step.label}</p>
+                  <p className="mt-1 text-xs text-zinc-400">{step.status}: {step.detail}</p>
                 </div>
               ))}
             </div>
@@ -43,10 +43,10 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
 
       <Panel title="Security Mode">
         {agent ? (
-          <div className="grid gap-2 text-sm text-slate-300">
-            <p>Mode: <span className="text-cyan-100">{agent.securityMode.mode}</span></p>
-            <p>Actor: <span className="text-cyan-100">{agent.securityMode.actorRole}</span></p>
-            <p>Read-only: <span className="text-cyan-100">{agent.securityMode.readOnlyMode ? "on" : "off"}</span></p>
+          <div className="grid gap-2 text-sm text-zinc-300">
+            <p>Mode: <span className="text-yellow-100">{agent.securityMode.mode}</span></p>
+            <p>Actor: <span className="text-yellow-100">{agent.securityMode.actorRole}</span></p>
+            <p>Read-only: <span className="text-yellow-100">{agent.securityMode.readOnlyMode ? "on" : "off"}</span></p>
             <p>Destructive autonomy: <span className="text-red-200">never allowed</span></p>
           </div>
         ) : (
@@ -58,9 +58,9 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent && agent.actions.length > 0 ? (
           <div className="grid gap-2">
             {agent.actions.map((action) => (
-              <div key={action.auditLogEntry.id} className="rounded-lg border border-cyan-300/15 bg-cyan-400/5 p-2">
+              <div key={action.auditLogEntry.id} className="rounded-lg border border-yellow-300/15 bg-yellow-400/5 p-2">
                 <p className="text-sm text-white">{action.actionName}</p>
-                <p className="mt-1 text-xs text-slate-400">{action.status} - {action.dataLabel}</p>
+                <p className="mt-1 text-xs text-zinc-400">{action.status} - {action.dataLabel}</p>
               </div>
             ))}
           </div>
@@ -73,7 +73,7 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent && agent.executionLogs.length > 0 ? (
           <div className="grid gap-2">
             {agent.executionLogs.map((log) => (
-              <p key={log.id} className="rounded-lg border border-slate-600/35 bg-slate-950/40 p-2 text-xs text-slate-300">
+              <p key={log.id} className="rounded-lg border border-zinc-600/35 bg-black/40 p-2 text-xs text-zinc-300">
                 {log.level}: {log.message}
               </p>
             ))}
@@ -87,9 +87,9 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent ? (
           <div className="grid gap-2">
             {agent.scheduledAutomations.map((automation) => (
-              <div key={automation.id} className="rounded-lg border border-slate-600/35 bg-slate-950/40 p-2">
+              <div key={automation.id} className="rounded-lg border border-zinc-600/35 bg-black/40 p-2">
                 <p className="text-sm text-white">{automation.name}</p>
-                <p className="mt-1 text-xs text-slate-400">{automation.status} - {automation.cadence}</p>
+                <p className="mt-1 text-xs text-zinc-400">{automation.status} - {automation.cadence}</p>
               </div>
             ))}
           </div>
@@ -102,9 +102,9 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent ? (
           <div className="grid gap-2">
             {agent.toolStatus.map((tool) => (
-              <div key={tool.name} className="rounded-lg border border-slate-600/35 bg-slate-950/40 p-2">
-                <p className="text-sm text-white">{tool.name}: <span className="text-cyan-100">{tool.status}</span></p>
-                <p className="mt-1 text-xs text-slate-400">{tool.detail}</p>
+              <div key={tool.name} className="rounded-lg border border-zinc-600/35 bg-black/40 p-2">
+                <p className="text-sm text-white">{tool.name}: <span className="text-yellow-100">{tool.status}</span></p>
+                <p className="mt-1 text-xs text-zinc-400">{tool.detail}</p>
               </div>
             ))}
           </div>
@@ -117,9 +117,9 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent ? (
           <div className="grid gap-2">
             {agent.briefings.map((briefing) => (
-              <div key={briefing.id} className="rounded-lg border border-cyan-300/15 bg-cyan-400/5 p-2">
+              <div key={briefing.id} className="rounded-lg border border-yellow-300/15 bg-yellow-400/5 p-2">
                 <p className="text-sm text-white">{briefing.title}</p>
-                <p className="mt-1 text-xs text-slate-400">{briefing.scheduledFor} - {briefing.dataLabel}</p>
+                <p className="mt-1 text-xs text-zinc-400">{briefing.scheduledFor} - {briefing.dataLabel}</p>
               </div>
             ))}
           </div>
@@ -132,9 +132,9 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent ? (
           <div className="grid gap-2">
             {agent.botConnectors.map((bot) => (
-              <div key={bot.name} className="rounded-lg border border-slate-600/35 bg-slate-950/40 p-2">
-                <p className="text-sm text-white">{bot.name}: <span className="text-cyan-100">{bot.mode}</span></p>
-                <p className="mt-1 text-xs text-slate-400">{bot.detail}</p>
+              <div key={bot.name} className="rounded-lg border border-zinc-600/35 bg-black/40 p-2">
+                <p className="text-sm text-white">{bot.name}: <span className="text-yellow-100">{bot.mode}</span></p>
+                <p className="mt-1 text-xs text-zinc-400">{bot.detail}</p>
               </div>
             ))}
           </div>
@@ -147,14 +147,14 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
         {agent ? (
           <div className="grid gap-2">
             {agent.agentNetwork.map((networkAgent) => (
-              <div key={networkAgent.name} className="rounded-lg border border-cyan-300/15 bg-cyan-400/5 p-2">
+              <div key={networkAgent.name} className="rounded-lg border border-yellow-300/15 bg-yellow-400/5 p-2">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-white">{networkAgent.name}</p>
-                  <span className={networkAgent.health === "blocked" ? "text-xs text-amber-200" : "text-xs text-emerald-300"}>
+                  <span className={networkAgent.health === "blocked" ? "text-xs text-amber-200" : "text-xs text-zinc-100"}>
                     {networkAgent.health}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-slate-400">{networkAgent.activeMission}</p>
+                <p className="mt-1 text-xs text-zinc-400">{networkAgent.activeMission}</p>
               </div>
             ))}
           </div>
@@ -169,12 +169,12 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="glass-panel rounded-lg p-4">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-cyan-100">{title}</h2>
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-yellow-100">{title}</h2>
       {children}
     </section>
   );
 }
 
 function Empty({ text }: { text: string }) {
-  return <p className="text-sm text-slate-400">{text}</p>;
+  return <p className="text-sm text-zinc-400">{text}</p>;
 }

@@ -23,29 +23,29 @@ export function SettingsPanel({
 }: SettingsPanelProps) {
   return (
     <section className="glass-panel rounded-lg p-4">
-      <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-cyan-100">
+      <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-yellow-100">
         <Settings className="size-4" />
         Settings
       </h2>
       <div className="mt-4 grid gap-3">
-        <label className="grid gap-1 text-sm text-slate-300">
+        <label className="grid gap-1 text-sm text-zinc-300">
           Assistant name
           <input
             value={assistantName}
             onChange={(event) => onAssistantNameChange(event.target.value)}
-            className="rounded-lg border border-cyan-300/20 bg-slate-950/60 px-3 py-2 text-white outline-none"
+            className="rounded-lg border border-yellow-300/20 bg-black/60 px-3 py-2 text-white outline-none"
           />
         </label>
-        <label className="flex items-center justify-between gap-3 text-sm text-slate-300">
+        <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
           Voice mode
           <input type="checkbox" checked={voiceMode} onChange={(event) => onVoiceModeChange(event.target.checked)} />
         </label>
-        <label className="grid gap-1 text-sm text-slate-300">
+        <label className="grid gap-1 text-sm text-zinc-300">
           Dashboard theme
           <select
             value={theme}
             onChange={(event) => onThemeChange(event.target.value as DashboardTheme)}
-            className="rounded-lg border border-cyan-300/20 bg-slate-950/60 px-3 py-2 text-white outline-none"
+            className="rounded-lg border border-yellow-300/20 bg-black/60 px-3 py-2 text-white outline-none"
           >
             <option value="neon">Neon</option>
             <option value="midnight">Midnight</option>

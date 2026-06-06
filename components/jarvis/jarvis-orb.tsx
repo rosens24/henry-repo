@@ -13,9 +13,10 @@ export function JarvisOrb({ status }: JarvisOrbProps) {
   return (
     <div className="orb-shell h-[300px] w-full max-w-[520px] sm:h-[420px] xl:h-[520px]">
       <Canvas camera={{ position: [0, 0, 5.5], fov: 55 }}>
-        <ambientLight intensity={0.6} />
-        <pointLight position={[2, 2, 3]} intensity={2} color="#22d3ee" />
-        <pointLight position={[-2, -1, 2]} intensity={1.4} color="#a855f7" />
+        <ambientLight intensity={0.54} />
+        <pointLight position={[2, 2, 3]} intensity={2.2} color="#facc15" />
+        <pointLight position={[-2, -1, 2]} intensity={1.25} color="#f8fafc" />
+        <pointLight position={[0, -2, 3]} intensity={0.9} color="#a1a1aa" />
         <ParticleBrain status={status} />
       </Canvas>
     </div>
@@ -71,37 +72,37 @@ function ParticleBrain({ status }: JarvisOrbProps) {
     <group>
       <mesh>
         <icosahedronGeometry args={[1.34, 3]} />
-        <meshStandardMaterial color="#0891b2" emissive="#22d3ee" emissiveIntensity={0.8} transparent opacity={0.16} wireframe />
+        <meshStandardMaterial color="#ca8a04" emissive="#facc15" emissiveIntensity={0.82} transparent opacity={0.18} wireframe />
       </mesh>
       <group ref={outerRig}>
         <mesh>
           <torusGeometry args={[1.72, 0.012, 12, 192]} />
-          <meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={1.5} />
+          <meshStandardMaterial color="#facc15" emissive="#facc15" emissiveIntensity={1.55} metalness={0.72} roughness={0.2} />
         </mesh>
         <mesh rotation={[Math.PI / 2.6, 0.3, 0.2]}>
           <torusGeometry args={[2.02, 0.008, 12, 192]} />
-          <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={1.45} />
+          <meshStandardMaterial color="#f8fafc" emissive="#e4e4e7" emissiveIntensity={1.25} metalness={0.85} roughness={0.16} />
         </mesh>
         <mesh rotation={[1.1, 0.7, 0.9]}>
           <torusGeometry args={[2.32, 0.006, 12, 224]} />
-          <meshStandardMaterial color="#d946ef" emissive="#d946ef" emissiveIntensity={1.15} />
+          <meshStandardMaterial color="#a1a1aa" emissive="#71717a" emissiveIntensity={1.08} metalness={0.9} roughness={0.18} />
         </mesh>
       </group>
       <group ref={innerRig}>
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.76, 0.018, 12, 128]} />
-          <meshStandardMaterial color="#e0f2fe" emissive="#67e8f9" emissiveIntensity={1.8} />
+          <meshStandardMaterial color="#fff7ed" emissive="#fde68a" emissiveIntensity={1.8} metalness={0.6} roughness={0.16} />
         </mesh>
         <mesh rotation={[0, Math.PI / 2, 0]}>
           <torusGeometry args={[0.98, 0.01, 12, 128]} />
-          <meshStandardMaterial color="#34d399" emissive="#34d399" emissiveIntensity={1.4} />
+          <meshStandardMaterial color="#d4d4d8" emissive="#f4f4f5" emissiveIntensity={1.32} metalness={0.86} roughness={0.14} />
         </mesh>
       </group>
       <points ref={points}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
-        <pointsMaterial color="#a5f3fc" size={0.022} sizeAttenuation transparent opacity={0.92} />
+        <pointsMaterial color="#fde68a" size={0.022} sizeAttenuation transparent opacity={0.94} />
       </points>
     </group>
   );

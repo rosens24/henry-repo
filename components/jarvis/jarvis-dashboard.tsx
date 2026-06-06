@@ -191,12 +191,12 @@ export function JarvisDashboard() {
       <header className="px-3 pt-3">
         <div className="hud-panel grid gap-4 rounded-md p-4 lg:grid-cols-[1.15fr_1fr_1.35fr]">
           <div className="flex items-center gap-4">
-            <div className="servo-pulse flex size-14 items-center justify-center rounded-md border border-cyan-300/40 bg-cyan-300/10 shadow-[0_0_28px_rgba(34,211,238,0.34)]">
-              <Bot className="size-7 text-cyan-100" />
+            <div className="servo-pulse flex size-14 items-center justify-center rounded-md border border-yellow-300/40 bg-yellow-300/10 shadow-[0_0_28px_rgba(250,204,21,0.34)]">
+              <Bot className="size-7 text-yellow-100" />
             </div>
             <div>
               <p className="machine-text text-lg font-semibold uppercase tracking-[0.24em] text-white">Cleanz Command Center</p>
-              <p className="mt-1 text-xs uppercase tracking-[0.2em] text-cyan-200/70">Henry IV machine layer</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.2em] text-yellow-200/70">Henry IV machine layer</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
@@ -206,9 +206,9 @@ export function JarvisDashboard() {
               ["Network", "Secure"],
               ["Uptime", "99.7%"],
             ].map(([label, value]) => (
-              <div key={label} className="data-rail rounded-md border border-cyan-300/15 bg-slate-950/50 px-3 py-2">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">{label}</p>
-                <p className="mt-1 text-xs font-semibold uppercase text-emerald-300">{value}</p>
+              <div key={label} className="data-rail rounded-md border border-yellow-300/15 bg-black/50 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400">{label}</p>
+                <p className="mt-1 text-xs font-semibold uppercase text-zinc-100">{value}</p>
               </div>
             ))}
           </div>
@@ -220,7 +220,7 @@ export function JarvisDashboard() {
             <StatusPill icon={<Database className="size-4" />} label="OpenAI" value={openAiStatus} />
           </div>
         </div>
-        <nav className="mt-3 flex flex-wrap gap-2 rounded-md border border-cyan-300/15 bg-slate-950/55 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
+        <nav className="mt-3 flex flex-wrap gap-2 rounded-md border border-yellow-300/15 bg-black/55 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
           <MenuButton
             active={activeView === "dashboard"}
             icon={<LayoutDashboard className="size-4" />}
@@ -317,31 +317,32 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
 
         <section className="grid content-start gap-3">
           <section className="hud-panel machine-core relative flex min-h-[560px] flex-col items-center justify-center overflow-hidden rounded-md p-4 xl:min-h-[720px]">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.16),transparent_36%),radial-gradient(circle_at_64%_50%,rgba(16,185,129,0.1),transparent_28%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.18),transparent_36%),radial-gradient(circle_at_64%_50%,rgba(244,244,245,0.12),transparent_28%)]" />
+            <div className="gold-forge" />
             <div className="scan-beam" />
             <motion.div
-              className="absolute top-4 left-4 z-10 rounded-md border border-cyan-300/20 bg-slate-950/70 px-3 py-2 text-xs text-cyan-100"
+              className="absolute top-4 left-4 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100"
               animate={{ opacity: [0.55, 1, 0.55] }}
               transition={{ duration: 2.4, repeat: Infinity }}
             >
               <p className="hud-title">Neural Bus</p>
-              <p className="mt-1 text-emerald-300">Synchronized</p>
+              <p className="mt-1 text-zinc-100">Synchronized</p>
             </motion.div>
-            <div className="absolute top-28 right-8 z-10 rounded-md border border-cyan-300/20 bg-slate-950/70 px-3 py-2 text-xs text-cyan-100">
+            <div className="absolute top-28 right-8 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100">
               <p className="hud-title">Dispatch Engine</p>
               <p className="mt-1">Operational</p>
             </div>
-            <div className="absolute bottom-28 left-10 z-10 rounded-md border border-cyan-300/20 bg-slate-950/70 px-3 py-2 text-xs text-cyan-100">
+            <div className="absolute bottom-28 left-10 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100">
               <p className="hud-title">Field Ops</p>
               <p className="mt-1">18 units tracked</p>
             </div>
-            <div className="absolute bottom-28 right-10 z-10 rounded-md border border-cyan-300/20 bg-slate-950/70 px-3 py-2 text-xs text-cyan-100">
+            <div className="absolute bottom-28 right-10 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100">
               <p className="hud-title">Comms Relay</p>
               <p className="mt-1">Read-only</p>
             </div>
             <JarvisOrb status={status} />
             <div className="hud-divider relative z-10 mt-2 w-full max-w-2xl" />
-            <div className="machine-text relative z-10 mt-3 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-cyan-200">
+            <div className="machine-text relative z-10 mt-3 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-yellow-200">
               <Activity className="size-4" />
               Henry IV core active - read-only mode
             </div>
@@ -363,10 +364,10 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
                   key={action}
                   type="button"
                   onClick={() => onSubmitCommand(`Henry IV, ${action}`, "typed")}
-                  className="data-rail flex min-h-16 items-center justify-between rounded-md border border-cyan-300/20 bg-cyan-300/8 px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-50 transition hover:border-emerald-300/45 hover:bg-emerald-300/10"
+                  className="data-rail flex min-h-16 items-center justify-between rounded-md border border-yellow-300/20 bg-yellow-300/8 px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-yellow-50 transition hover:border-zinc-100/45 hover:bg-zinc-100/10"
                 >
                   {action}
-                  <Zap className="size-3 shrink-0 text-cyan-200" />
+                  <Zap className="size-3 shrink-0 text-yellow-200" />
                 </button>
               ))}
             </div>
@@ -374,12 +375,12 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
           <HudSection title="Daily Briefing">
             <div className="grid gap-3">
               {getDailyBriefings().map((briefing) => (
-                <div key={briefing.id} className="rounded-md border border-cyan-300/15 bg-slate-950/45 p-3">
+                <div key={briefing.id} className="rounded-md border border-yellow-300/15 bg-black/45 p-3">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs font-semibold text-white">{briefing.title}</p>
-                    <span className="text-[10px] uppercase text-emerald-300">{briefing.period === "nightly" ? "Upcoming" : "Completed"}</span>
+                    <span className="text-[10px] uppercase text-zinc-100">{briefing.period === "nightly" ? "Upcoming" : "Completed"}</span>
                   </div>
-                  <p className="mt-1 text-[11px] text-slate-400">{briefing.scheduledFor} - {briefing.dataLabel}</p>
+                  <p className="mt-1 text-[11px] text-zinc-400">{briefing.scheduledFor} - {briefing.dataLabel}</p>
                 </div>
               ))}
             </div>
@@ -441,7 +442,7 @@ function VoiceSettingsView({
               <VoiceControl status={status} onStatusChange={onStatusChange} onTranscript={(command) => onSubmitCommand(command, "voice")} />
             </>
           ) : (
-            <div className="rounded-md border border-slate-700/50 bg-slate-950/45 p-4 text-sm text-slate-300">
+            <div className="rounded-md border border-zinc-700/50 bg-black/45 p-4 text-sm text-zinc-300">
               Voice mode is disabled in settings.
             </div>
           )}
@@ -486,11 +487,11 @@ function speak(text: string) {
 
 function StatusPill({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-md border border-cyan-300/15 bg-slate-950/55 px-3 py-2">
-      <span className="text-cyan-200">{icon}</span>
+    <div className="flex items-center gap-2 rounded-md border border-yellow-300/15 bg-black/55 px-3 py-2">
+      <span className="text-yellow-200">{icon}</span>
       <div>
-        <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">{label}</p>
-        <p className="text-xs font-semibold uppercase text-cyan-100">{value}</p>
+        <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400">{label}</p>
+        <p className="text-xs font-semibold uppercase text-yellow-100">{value}</p>
       </div>
     </div>
   );
@@ -503,11 +504,11 @@ function MenuButton({ active, icon, label, onClick }: { active: boolean; icon: R
       onClick={onClick}
       className={`flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
         active
-          ? "border-cyan-300/40 bg-cyan-300/18 text-cyan-50 shadow-[0_0_18px_rgba(34,211,238,0.18)]"
-          : "border-cyan-300/10 bg-slate-950/45 text-slate-400 hover:border-cyan-300/30 hover:text-cyan-100"
+          ? "border-yellow-300/40 bg-yellow-300/20 text-yellow-50 shadow-[0_0_18px_rgba(250,204,21,0.18)]"
+          : "border-yellow-300/10 bg-black/45 text-zinc-400 hover:border-yellow-300/30 hover:text-yellow-100"
       }`}
     >
-      <span className="text-cyan-200">{icon}</span>
+      <span className="text-yellow-200">{icon}</span>
       {label}
     </button>
   );
@@ -518,7 +519,7 @@ function HudSection({ title, children }: { title: string; children: React.ReactN
     <section className="hud-panel rounded-md p-3">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="hud-title">{title}</h2>
-        <Radio className="size-3 text-cyan-300" />
+        <Radio className="size-3 text-yellow-300" />
       </div>
       {children}
     </section>
@@ -530,8 +531,8 @@ function SystemStatus() {
     <div className="grid gap-2">
       {["AI Core", "Database", "API Gateway", "Integrations", "Web Services"].map((item) => (
         <div key={item} className="flex items-center justify-between text-xs">
-          <span className="flex items-center gap-2 text-slate-300"><span className="size-2 rounded-full bg-emerald-300" />{item}</span>
-          <span className="text-emerald-300">Operational</span>
+          <span className="flex items-center gap-2 text-zinc-300"><span className="size-2 rounded-full bg-zinc-100" />{item}</span>
+          <span className="text-zinc-100">Operational</span>
         </div>
       ))}
     </div>
@@ -548,19 +549,19 @@ function MachineStatusRail({ status }: { status: AiStatus }) {
   return (
     <div className="grid gap-2">
       {statusItems.map(({ label, value, icon: Icon }, index) => (
-        <div key={label} className="data-rail rounded-md border border-cyan-300/15 bg-slate-950/50 p-3">
+        <div key={label} className="data-rail rounded-md border border-yellow-300/15 bg-black/50 p-3">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">
-              <Icon className="size-4 text-cyan-200" />
+            <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-300">
+              <Icon className="size-4 text-yellow-200" />
               {label}
             </span>
-            <span className="text-xs font-semibold uppercase text-emerald-300">{value}</span>
+            <span className="text-xs font-semibold uppercase text-zinc-100">{value}</span>
           </div>
           <div className="mt-3 flex h-1.5 gap-1">
             {[0, 1, 2, 3, 4, 5].map((segment) => (
               <span
                 key={segment}
-                className="h-full flex-1 rounded-full bg-cyan-300/70 shadow-[0_0_10px_rgba(34,211,238,0.42)]"
+                className="h-full flex-1 rounded-full bg-yellow-300/70 shadow-[0_0_10px_rgba(250,204,21,0.42)]"
                 style={{ opacity: 0.32 + (((segment + index) % 4) + 1) * 0.16 }}
               />
             ))}
@@ -575,9 +576,9 @@ function IntegrationList({ connectors }: { connectors: BotConnectorStatus[] }) {
   return (
     <div className="grid gap-2">
       {connectors.map((bot) => (
-        <div key={bot.name} className="flex items-center justify-between rounded-md border border-slate-700/50 bg-slate-950/45 px-3 py-2 text-xs">
-          <span className="flex items-center gap-2 text-slate-200"><Database className="size-3 text-cyan-200" />{bot.name}</span>
-          <span className={bot.mode === "live" ? "text-emerald-300" : "text-slate-500"}>{bot.mode === "live" ? "Live" : "Not connected"}</span>
+        <div key={bot.name} className="flex items-center justify-between rounded-md border border-zinc-700/50 bg-black/45 px-3 py-2 text-xs">
+          <span className="flex items-center gap-2 text-zinc-200"><Database className="size-3 text-yellow-200" />{bot.name}</span>
+          <span className={bot.mode === "live" ? "text-zinc-100" : "text-zinc-500"}>{bot.mode === "live" ? "Live" : "Not connected"}</span>
         </div>
       ))}
     </div>
@@ -588,7 +589,7 @@ function ApprovalQueue() {
   return (
     <div className="grid gap-2">
       {["Send 23 texts to cleaners", "Send follow-up to 6 leads", "Update pricing for 2 services", "Issue refund to #1042"].map((item) => (
-        <div key={item} className="rounded-md border border-amber-300/20 bg-amber-300/8 px-3 py-2 text-xs text-slate-200">
+        <div key={item} className="rounded-md border border-amber-300/20 bg-amber-300/8 px-3 py-2 text-xs text-zinc-200">
           <div className="flex items-center justify-between">
             <span>{item}</span>
             <span className="text-amber-300">Approval</span>
@@ -603,7 +604,7 @@ function RecentActions() {
   return (
     <div className="grid gap-2">
       {["Generated midday briefing", "Scanned for new leads", "Detected 3 open issues", "Prepared cleaner payroll"].map((item) => (
-        <div key={item} className="rounded-md border border-cyan-300/15 bg-cyan-300/5 px-3 py-2 text-xs text-slate-300">{item}</div>
+        <div key={item} className="rounded-md border border-yellow-300/15 bg-yellow-300/5 px-3 py-2 text-xs text-zinc-300">{item}</div>
       ))}
     </div>
   );
@@ -613,7 +614,7 @@ function Opportunities() {
   return (
     <div className="grid gap-2">
       {["5 leads haven't responded", "3 jobs need cleaner coverage", "7 customers due for follow up", "4 reviews need responses"].map((item) => (
-        <div key={item} className="rounded-md border border-fuchsia-300/20 bg-fuchsia-400/8 px-3 py-2 text-xs text-slate-200">{item}</div>
+        <div key={item} className="rounded-md border border-zinc-300/20 bg-zinc-400/10 px-3 py-2 text-xs text-zinc-200">{item}</div>
       ))}
     </div>
   );

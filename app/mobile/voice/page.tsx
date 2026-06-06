@@ -72,18 +72,18 @@ export default function MobileVoicePage() {
         <button
           type="button"
           onClick={startListening}
-          className="mx-auto flex size-24 items-center justify-center rounded-full border border-cyan-300/35 bg-cyan-300/15 text-cyan-100 shadow-[0_0_46px_rgba(34,211,238,0.34)]"
+          className="mx-auto flex size-24 items-center justify-center rounded-full border border-yellow-300/35 bg-yellow-300/15 text-yellow-100 shadow-[0_0_46px_rgba(250,204,21,0.34)]"
           aria-label="Start mobile voice command"
         >
           <Mic className="size-10" />
         </button>
-        <p className="mt-5 text-sm text-slate-300">{isListening ? "Listening for Henry IV..." : status}</p>
-        <p className="mt-2 text-xs text-slate-500">{speechSupported ? "Browser speech recognition ready." : "Browser speech recognition may be blocked; fallback command is available."}</p>
-        <div className="mt-4 rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-4 text-left">
+        <p className="mt-5 text-sm text-zinc-300">{isListening ? "Listening for Henry IV..." : status}</p>
+        <p className="mt-2 text-xs text-zinc-500">{speechSupported ? "Browser speech recognition ready." : "Browser speech recognition may be blocked; fallback command is available."}</p>
+        <div className="mt-4 rounded-lg border border-yellow-300/20 bg-yellow-300/10 p-4 text-left">
           <p className="flex items-center gap-2 text-sm font-semibold text-amber-100"><Volume2 className="size-4" />Henry IV Response</p>
-          <p className="mt-2 text-sm text-slate-300">{response}</p>
+          <p className="mt-2 text-sm text-zinc-300">{response}</p>
         </div>
-        <p className="mt-3 text-xs text-slate-500">Mock mobile voice mode. No real code, messages, payments, or booking changes execute without approval.</p>
+        <p className="mt-3 text-xs text-zinc-500">Mock mobile voice mode. No real code, messages, payments, or booking changes execute without approval.</p>
       </section>
     </MobileShell>
   );

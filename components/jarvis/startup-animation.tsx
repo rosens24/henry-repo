@@ -13,7 +13,7 @@ export function StartupAnimation({ show }: StartupAnimationProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
       transition={{ delay: 1.35, duration: 0.55 }}

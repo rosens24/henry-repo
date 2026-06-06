@@ -227,29 +227,29 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
     <section className="glass-panel rounded-lg p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-100">Voice</h2>
-          <p className="mt-1 text-xs text-slate-400">{voiceState}</p>
+          <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-100">Voice</h2>
+          <p className="mt-1 text-xs text-zinc-400">{voiceState}</p>
         </div>
         <button
           type="button"
           onClick={toggleListening}
           aria-label={isListening ? "Stop listening" : "Start listening"}
-          className="inline-flex size-12 items-center justify-center rounded-full border border-cyan-300/35 bg-cyan-300/14 text-cyan-100 shadow-[0_0_22px_rgba(34,211,238,0.22)] transition hover:bg-cyan-300/22"
+          className="inline-flex size-12 items-center justify-center rounded-full border border-yellow-300/35 bg-yellow-300/15 text-yellow-100 shadow-[0_0_22px_rgba(250,204,21,0.28)] transition hover:bg-yellow-300/22"
         >
           {isListening ? <MicOff className="size-5" /> : <Mic className="size-5" />}
         </button>
       </div>
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] uppercase tracking-[0.14em] text-slate-400">
-        <span className="rounded-lg border border-slate-600/40 bg-slate-950/45 px-2 py-2">
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] uppercase tracking-[0.14em] text-zinc-400">
+        <span className="rounded-lg border border-zinc-600/40 bg-black/45 px-2 py-2">
           {supportChecked ? sttLabel(sttHealth, speechSupported) : "STT check"}
         </span>
-        <span className="rounded-lg border border-slate-600/40 bg-slate-950/45 px-2 py-2">{supportChecked ? (ttsSupported ? "TTS ready" : "TTS blocked") : "TTS check"}</span>
-        <span className="rounded-lg border border-slate-600/40 bg-slate-950/45 px-2 py-2">Wake: Henry IV</span>
+        <span className="rounded-lg border border-zinc-600/40 bg-black/45 px-2 py-2">{supportChecked ? (ttsSupported ? "TTS ready" : "TTS blocked") : "TTS check"}</span>
+        <span className="rounded-lg border border-zinc-600/40 bg-black/45 px-2 py-2">Wake: Henry IV</span>
       </div>
-      <p className="mt-3 text-xs text-slate-300">Heard: {lastHeard}</p>
+      <p className="mt-3 text-xs text-zinc-300">Heard: {lastHeard}</p>
       <div className="mt-3 flex gap-2">
-        <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-cyan-300/20 bg-slate-950/55 px-3 py-2">
-          <Keyboard className="size-4 shrink-0 text-cyan-200" />
+        <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-yellow-300/20 bg-black/55 px-3 py-2">
+          <Keyboard className="size-4 shrink-0 text-yellow-200" />
           <input
             value={manualCommand}
             onChange={(event) => setManualCommand(event.target.value)}
@@ -257,13 +257,13 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
               if (event.key === "Enter") submitManualVoiceCommand();
             }}
             placeholder="Typed voice fallback..."
-            className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-slate-500"
+            className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-zinc-500"
           />
         </label>
         <button
           type="button"
           onClick={submitManualVoiceCommand}
-          className="rounded-lg border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-xs font-semibold text-cyan-50"
+          className="rounded-lg border border-yellow-300/25 bg-yellow-300/10 px-3 py-2 text-xs font-semibold text-yellow-50"
         >
           Send
         </button>
@@ -272,7 +272,7 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
         <button
           type="button"
           onClick={testVoice}
-          className="flex items-center justify-center gap-2 rounded-lg border border-fuchsia-300/25 bg-fuchsia-300/10 px-3 py-2 text-xs font-semibold text-fuchsia-50"
+          className="flex items-center justify-center gap-2 rounded-lg border border-zinc-300/25 bg-zinc-300/10 px-3 py-2 text-xs font-semibold text-zinc-50"
         >
           <Volume2 className="size-4" />
           Test voice reply
@@ -280,7 +280,7 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
         <button
           type="button"
           onClick={runFallbackCommand}
-          className="rounded-lg border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-xs font-semibold text-cyan-50"
+          className="rounded-lg border border-yellow-300/25 bg-yellow-300/10 px-3 py-2 text-xs font-semibold text-yellow-50"
         >
           Send XENOMORPH command
         </button>
@@ -289,7 +289,7 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
         <button
           type="button"
           onClick={checkMicPermission}
-          className="rounded-lg border border-emerald-300/25 bg-emerald-300/10 px-3 py-2 text-xs font-semibold text-emerald-50"
+          className="rounded-lg border border-zinc-100/25 bg-zinc-100/10 px-3 py-2 text-xs font-semibold text-zinc-50"
         >
           Check mic
         </button>
@@ -303,7 +303,7 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
         <button
           type="button"
           onClick={testJarvisApiReply}
-          className="flex items-center justify-center gap-2 rounded-lg border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-xs font-semibold text-cyan-50"
+          className="flex items-center justify-center gap-2 rounded-lg border border-yellow-300/25 bg-yellow-300/10 px-3 py-2 text-xs font-semibold text-yellow-50"
         >
           <Radio className="size-3" />
           API reply

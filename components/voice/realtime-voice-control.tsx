@@ -152,41 +152,41 @@ export function RealtimeVoiceControl({ onStatusChange }: RealtimeVoiceControlPro
   }
 
   return (
-    <section className="glass-panel rounded-lg border-cyan-300/25 p-4">
+    <section className="glass-panel rounded-lg border-yellow-300/25 p-4">
       <audio ref={remoteAudioRef} autoPlay />
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <Radio className="size-4 text-cyan-200" />
-            <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-100">Live Henry IV</h2>
+            <Radio className="size-4 text-yellow-200" />
+            <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-100">Live Henry IV</h2>
           </div>
-          <p className="mt-1 text-xs leading-5 text-slate-400">{statusText}</p>
+          <p className="mt-1 text-xs leading-5 text-zinc-400">{statusText}</p>
         </div>
         <button
           type="button"
           onClick={startSession}
           aria-label={isLive ? "Stop live Henry IV voice" : "Start live Henry IV voice"}
-          className="inline-flex size-12 shrink-0 items-center justify-center rounded-full border border-cyan-300/40 bg-cyan-300/16 text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.28)] transition hover:bg-cyan-300/24"
+          className="inline-flex size-12 shrink-0 items-center justify-center rounded-full border border-yellow-300/40 bg-yellow-300/15 text-yellow-100 shadow-[0_0_28px_rgba(250,204,21,0.28)] transition hover:bg-yellow-300/24"
         >
           {isLive ? <MicOff className="size-5" /> : <Mic className="size-5" />}
         </button>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[10px] uppercase tracking-[0.13em] text-slate-300">
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[10px] uppercase tracking-[0.13em] text-zinc-300">
         <StatusChip icon={<Headphones className="size-3" />} label={stateLabel(state)} />
         <StatusChip icon={<Volume2 className="size-3" />} label="Realtime voice" />
         <StatusChip icon={<ShieldCheck className="size-3" />} label="Server key only" />
       </div>
 
-      <div className="mt-3 rounded-lg border border-cyan-300/15 bg-slate-950/55 p-3">
-        <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-200">Signal</p>
-        <p className="mt-1 text-xs text-slate-300">{lastSignal}</p>
+      <div className="mt-3 rounded-lg border border-yellow-300/15 bg-black/55 p-3">
+        <p className="text-[11px] uppercase tracking-[0.16em] text-yellow-200">Signal</p>
+        <p className="mt-1 text-xs text-zinc-300">{lastSignal}</p>
       </div>
 
       {sessionEvents.length ? (
-        <div className="mt-3 grid gap-1 text-xs text-slate-400">
+        <div className="mt-3 grid gap-1 text-xs text-zinc-400">
           {sessionEvents.map((event) => (
-            <p key={event} className="truncate rounded-md border border-slate-700/45 bg-slate-950/45 px-2 py-1">
+            <p key={event} className="truncate rounded-md border border-zinc-700/45 bg-black/45 px-2 py-1">
               {event}
             </p>
           ))}
@@ -204,7 +204,7 @@ export function RealtimeVoiceControl({ onStatusChange }: RealtimeVoiceControlPro
 
 function StatusChip({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <span className="flex items-center justify-center gap-1 rounded-lg border border-slate-600/40 bg-slate-950/45 px-2 py-2">
+    <span className="flex items-center justify-center gap-1 rounded-lg border border-zinc-600/40 bg-black/45 px-2 py-2">
       {icon}
       {label}
     </span>

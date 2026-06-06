@@ -17,13 +17,13 @@ const navItems = [
 
 export function MobileShell({ title, children }: MobileShellProps) {
   return (
-    <main className="jarvis-grid min-h-screen bg-slate-950 p-4 text-slate-100">
+    <main className="jarvis-grid min-h-screen bg-black p-4 text-zinc-100">
       <header className="glass-panel sticky top-3 z-10 rounded-lg p-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-200/75">Cleanz mobile command</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-yellow-200/75">Cleanz mobile command</p>
         <h1 className="mt-2 text-2xl font-semibold text-white">{title}</h1>
         <nav className="mt-4 flex gap-2 overflow-x-auto pb-1">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="shrink-0 rounded-lg border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-xs text-cyan-50">
+            <Link key={item.href} href={item.href} className="shrink-0 rounded-lg border border-yellow-300/20 bg-yellow-300/10 px-3 py-2 text-xs text-yellow-50">
               {item.label}
             </Link>
           ))}

@@ -45,19 +45,19 @@ export function TalkToXenomorph({ onQueued }: TalkToXenomorphProps) {
     <section className="hud-panel rounded-md p-3">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="hud-title">Talk to XENOMORPH</h2>
-        <TerminalSquare className="size-4 text-fuchsia-200" />
+        <TerminalSquare className="size-4 text-zinc-200" />
       </div>
       <form onSubmit={submitPrompt} className="grid gap-3">
         <textarea
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
           placeholder="Send a prompt to XENOMORPH for code changes, product direction, or next build instructions..."
-          className="min-h-24 resize-none rounded-md border border-fuchsia-300/20 bg-slate-950/60 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500"
+          className="min-h-24 resize-none rounded-md border border-zinc-300/20 bg-black/60 px-3 py-2 text-sm text-white outline-none placeholder:text-zinc-500"
         />
         <button
           type="submit"
           disabled={isSending}
-          className="flex items-center justify-center gap-2 rounded-md border border-fuchsia-300/30 bg-fuchsia-300/15 px-3 py-2 text-sm font-semibold text-fuchsia-50"
+          className="flex items-center justify-center gap-2 rounded-md border border-zinc-300/30 bg-zinc-300/15 px-3 py-2 text-sm font-semibold text-zinc-50"
         >
           <SendHorizontal className="size-4" />
           {isSending ? "Queueing" : "Send to XENOMORPH"}
@@ -65,10 +65,10 @@ export function TalkToXenomorph({ onQueued }: TalkToXenomorphProps) {
       </form>
       <div className="mt-3 grid gap-2">
         {handoffs.length === 0 ? (
-          <p className="text-xs text-slate-400">No local handoffs queued yet.</p>
+          <p className="text-xs text-zinc-400">No local handoffs queued yet.</p>
         ) : (
           handoffs.map((handoff) => (
-            <p key={handoff.id} className="rounded-md border border-fuchsia-300/15 bg-fuchsia-400/8 p-2 text-xs text-slate-300">
+            <p key={handoff.id} className="rounded-md border border-zinc-300/15 bg-zinc-400/10 p-2 text-xs text-zinc-300">
               {handoff.status}: {handoff.prompt}
             </p>
           ))

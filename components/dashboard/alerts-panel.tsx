@@ -8,9 +8,9 @@ type AlertsPanelProps = {
 export function AlertsPanel({ alerts }: AlertsPanelProps) {
   return (
     <section className="glass-panel rounded-lg p-4">
-      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-100">Alerts</h2>
+      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-100">Alerts</h2>
       {alerts.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-400">No mock alerts active.</p>
+        <p className="mt-3 text-sm text-zinc-400">No mock alerts active.</p>
       ) : (
         <div className="mt-4 grid gap-3">
           {alerts.map((alert) => (
