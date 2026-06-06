@@ -1,6 +1,7 @@
 import { mockOperationalSnapshot } from "@/lib/mock-data/dashboard";
 import { createAuditLogEntry, recordAuditEntry } from "@/lib/security/audit-log";
 import { hasPermission, permissionMessage } from "@/lib/security/permissions";
+import { getGithubRepoStatus, getStripeTodayRevenue, getSupabaseStatus, type LiveReadResult } from "@/lib/integrations/real-data";
 import type {
   ActionContext,
   ActionLevel,
@@ -18,6 +19,7 @@ function makeResult(
   summary: string,
   permissionRequired: UserRole[],
   payload?: unknown,
+  dataLabel: "mock data" | "real data" = "mock data",
 ): ActionResult {
   const confirmationRequired = level === 3;
   const allowed = hasPermission(context.actorRole, permissionRequired);
@@ -38,7 +40,7 @@ function makeResult(
     actionName,
     level,
     status,
-    dataLabel: "mock data" as const,
+    dataLabel,
     confirmationRequired,
     permissionRequired,
     summary: finalSummary,
@@ -49,6 +51,16 @@ function makeResult(
   return { ...baseResult, auditLogEntry };
 }
 
+function makeReadResult(
+  context: ActionContext,
+  actionName: JarvisActionName,
+  result: LiveReadResult,
+  fallbackSummary: string,
+  payload?: unknown,
+) {
+  return makeResult(context, actionName, 1, result.connected ? result.summary : fallbackSummary, ["customer"], result.payload ?? payload, result.dataLabel);
+}
+
 export const mockActions: SafeAction[] = [
   {
     name: "getTodayRevenue",
@@ -57,7 +69,9 @@ export const mockActions: SafeAction[] = [
     permissionRequired: ["customer"],
     confirmationRequired: false,
     async run(context) {
-      return makeResult(context, "getTodayRevenue", 1, `Mock revenue is ${mockOperationalSnapshot.revenue}.`, ["customer"], {
+      const liveRevenue = await getStripeTodayRevenue();
+
+      return makeReadResult(context, "getTodayRevenue", liveRevenue, `Fallback local estimate is ${mockOperationalSnapshot.revenue}. Connect Stripe for live revenue.`, {
         revenue: mockOperationalSnapshot.revenue,
       });
     },
@@ -69,7 +83,19 @@ export const mockActions: SafeAction[] = [
     permissionRequired: ["cleaner"],
     confirmationRequired: false,
     async run(context) {
-      return makeResult(context, "getUpcomingJobs", 1, `${mockOperationalSnapshot.upcomingJobs} mock jobs are upcoming.`, ["cleaner"]);
+      const supabase = await getSupabaseStatus();
+
+      return makeResult(
+        context,
+        "getUpcomingJobs",
+        1,
+        supabase.connected
+          ? "Supabase is connected, but no bookings table is configured yet. Add SUPABASE_BOOKINGS_TABLE to enable live upcoming jobs."
+          : `${mockOperationalSnapshot.upcomingJobs} local placeholder jobs are upcoming. Connect Supabase for live bookings.`,
+        ["cleaner"],
+        supabase.payload,
+        supabase.dataLabel,
+      );
     },
   },
   {
@@ -79,7 +105,19 @@ export const mockActions: SafeAction[] = [
     permissionRequired: ["admin"],
     confirmationRequired: false,
     async run(context) {
-      return makeResult(context, "getCleanerAvailability", 1, `${mockOperationalSnapshot.activeCleaners} cleaners are mock-active.`, ["admin"]);
+      const supabase = await getSupabaseStatus();
+
+      return makeResult(
+        context,
+        "getCleanerAvailability",
+        1,
+        supabase.connected
+          ? "Supabase is connected, but no cleaners table is configured yet. Add SUPABASE_CLEANERS_TABLE to enable live cleaner availability."
+          : `${mockOperationalSnapshot.activeCleaners} local placeholder cleaners are active. Connect Supabase for live cleaner availability.`,
+        ["admin"],
+        supabase.payload,
+        supabase.dataLabel,
+      );
     },
   },
   {
@@ -89,7 +127,7 @@ export const mockActions: SafeAction[] = [
     permissionRequired: ["admin"],
     confirmationRequired: false,
     async run(context) {
-      return makeResult(context, "getUnreadMessages", 1, "Mock inbox shows 7 unread customer messages.", ["admin"]);
+      return makeResult(context, "getUnreadMessages", 1, "Live inbox is not connected yet. Add Gmail or Twilio credentials to read real unread messages.", ["admin"]);
     },
   },
   {
@@ -99,13 +137,19 @@ export const mockActions: SafeAction[] = [
     permissionRequired: ["customer"],
     confirmationRequired: false,
     async run(context) {
+      const [revenue, supabase, github] = await Promise.all([getStripeTodayRevenue(), getSupabaseStatus(), getGithubRepoStatus()]);
+      const realSources = [revenue, supabase, github].filter((item) => item.connected);
+
       return makeResult(
         context,
         "summarizeDay",
         1,
-        `Mock summary: ${mockOperationalSnapshot.revenue} revenue, ${mockOperationalSnapshot.newBookings} bookings, ${mockOperationalSnapshot.missedCalls} missed calls.`,
+        realSources.length
+          ? `Live summary sources connected: ${realSources.map((item) => item.summary).join(" ")}`
+          : `Local fallback summary: ${mockOperationalSnapshot.revenue} estimated revenue, ${mockOperationalSnapshot.newBookings} bookings, ${mockOperationalSnapshot.missedCalls} missed calls. Connect Stripe/Supabase/Twilio for live operations.`,
         ["customer"],
-        mockOperationalSnapshot,
+        { fallback: mockOperationalSnapshot, live: realSources.map((item) => item.payload) },
+        realSources.length ? "real data" : "mock data",
       );
     },
   },
@@ -131,7 +175,19 @@ export const mockActions: SafeAction[] = [
       permissionRequired: ["owner"] as UserRole[],
       confirmationRequired: true,
       async run(context: ActionContext) {
-        return makeResult(context, name, 3, `${name} requires owner approval. Live integration is not connected.`, ["owner"]);
+        const github = name === "pushToGithub" ? await getGithubRepoStatus() : null;
+
+        return makeResult(
+          context,
+          name,
+          3,
+          github?.connected
+            ? `${name} can target the connected GitHub repo, but execution is blocked until explicit owner approval.`
+            : `${name} requires owner approval and a connected live integration.`,
+          ["owner"],
+          github?.payload,
+          github?.dataLabel ?? "mock data",
+        );
       },
     }),
   ),

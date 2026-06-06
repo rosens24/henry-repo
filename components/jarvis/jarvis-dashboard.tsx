@@ -18,10 +18,9 @@ import { TalkToXenomorph } from "@/components/jarvis/talk-to-xenomorph";
 import { RealtimeVoiceControl } from "@/components/voice/realtime-voice-control";
 import { VoiceControl } from "@/components/voice/voice-control";
 import { getDailyBriefings } from "@/lib/agent/briefing-generator";
-import { getBotConnectorStatuses } from "@/lib/bots/connectors";
 import { initialMessages, mockDashboardMetrics } from "@/lib/mock-data/dashboard";
 import type { ActionResult } from "@/lib/actions/action-types";
-import type { AgentRunResult } from "@/lib/agent/types";
+import type { AgentRunResult, BotConnectorStatus } from "@/lib/agent/types";
 import type { AiStatus, JarvisMessage } from "@/lib/ai/types";
 
 export function JarvisDashboard() {
@@ -34,12 +33,34 @@ export function JarvisDashboard() {
   const [approvalAction, setApprovalAction] = useState<ActionResult | null>(null);
   const [approvedHandoffs, setApprovedHandoffs] = useState<string[]>([]);
   const [openAiStatus, setOpenAiStatus] = useState("Bridge not checked");
+  const [connectorStatuses, setConnectorStatuses] = useState<BotConnectorStatus[]>(initialConnectorStatuses);
   const [agentRun, setAgentRun] = useState<AgentRunResult | null>(null);
   const [showStartup, setShowStartup] = useState(true);
   const [activeView, setActiveView] = useState<"dashboard" | "voice">("dashboard");
   const commandInputRef = useRef<HTMLInputElement>(null);
 
   const isLoading = status === "thinking";
+
+  useEffect(() => {
+    async function refreshSystemStatus() {
+      try {
+        const response = await fetch("/api/system/status");
+
+        if (!response.ok) return;
+
+        const statusPayload = (await response.json()) as {
+          openAiConnected: boolean;
+          connectors: BotConnectorStatus[];
+        };
+        setConnectorStatuses(statusPayload.connectors);
+        setOpenAiStatus(statusPayload.openAiConnected ? "OpenAI connected" : "OpenAI not connected");
+      } catch {
+        setOpenAiStatus("Status check failed");
+      }
+    }
+
+    void refreshSystemStatus();
+  }, []);
 
   useEffect(() => {
     const startupTimer = window.setTimeout(() => setShowStartup(false), 2000);
@@ -223,6 +244,7 @@ export function JarvisDashboard() {
           isLoading={isLoading}
           commandInputRef={commandInputRef}
           onSubmitCommand={submitCommand}
+          connectorStatuses={connectorStatuses}
         />
       ) : (
         <VoiceSettingsView
@@ -253,6 +275,19 @@ export function JarvisDashboard() {
   );
 }
 
+const initialConnectorStatuses: BotConnectorStatus[] = (["gmail", "calendar", "stripe", "twilio", "supabase", "github", "vercel", "cloudflare"] as const).map((name) => ({
+  name,
+  mode: "not_connected",
+  readOnlyReady: false,
+  draftReady: false,
+  executionReady: false,
+  permissionChecks: true,
+  auditLogs: true,
+  dryRun: true,
+  errorHandling: true,
+  detail: "Status has not loaded yet.",
+}));
+
 type DashboardViewProps = {
   messages: JarvisMessage[];
   status: AiStatus;
@@ -260,9 +295,10 @@ type DashboardViewProps = {
   isLoading: boolean;
   commandInputRef: React.RefObject<HTMLInputElement | null>;
   onSubmitCommand: (command: string, source: "typed" | "voice") => void;
+  connectorStatuses: BotConnectorStatus[];
 };
 
-function DashboardView({ messages, status, history, isLoading, commandInputRef, onSubmitCommand }: DashboardViewProps) {
+function DashboardView({ messages, status, history, isLoading, commandInputRef, onSubmitCommand, connectorStatuses }: DashboardViewProps) {
   return (
     <>
       <main className="grid flex-1 grid-cols-1 gap-3 p-3 xl:grid-cols-[300px_minmax(520px,1fr)_360px]">
@@ -362,7 +398,7 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
 
       <section className="grid gap-3 px-3 pb-3 xl:grid-cols-[1fr_1fr]">
         <HudSection title="Integrations">
-          <IntegrationList />
+          <IntegrationList connectors={connectorStatuses} />
         </HudSection>
         <HudSection title="AI Status">
           <SystemStatus />
@@ -535,13 +571,13 @@ function MachineStatusRail({ status }: { status: AiStatus }) {
   );
 }
 
-function IntegrationList() {
+function IntegrationList({ connectors }: { connectors: BotConnectorStatus[] }) {
   return (
     <div className="grid gap-2">
-      {getBotConnectorStatuses().map((bot) => (
+      {connectors.map((bot) => (
         <div key={bot.name} className="flex items-center justify-between rounded-md border border-slate-700/50 bg-slate-950/45 px-3 py-2 text-xs">
           <span className="flex items-center gap-2 text-slate-200"><Database className="size-3 text-cyan-200" />{bot.name}</span>
-          <span className="text-amber-300">Mock Mode</span>
+          <span className={bot.mode === "live" ? "text-emerald-300" : "text-slate-500"}>{bot.mode === "live" ? "Live" : "Not connected"}</span>
         </div>
       ))}
     </div>

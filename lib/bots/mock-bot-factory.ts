@@ -1,30 +1,37 @@
 import type { BotConnector, BotConnectorContext } from "@/lib/bots/bot-types";
 import type { BotConnectorName } from "@/lib/agent/types";
+import { getIntegrationDetail, hasLiveIntegration } from "@/lib/integrations/live-config";
 
 export function createMockBotConnector(name: BotConnectorName): BotConnector {
   return {
     name,
     status() {
+      const live = hasLiveIntegration(name);
+
       return {
         name,
-        mode: "mock",
-        readOnlyReady: true,
+        mode: live ? "live" : "not_connected",
+        readOnlyReady: live,
         draftReady: true,
         executionReady: false,
         permissionChecks: true,
         auditLogs: true,
-        dryRun: true,
+        dryRun: !live,
         errorHandling: true,
-        detail: `${name} bot is mock-only. Real credentials are not connected.`,
+        detail: getIntegrationDetail(name),
       };
     },
     async readOnly(context: BotConnectorContext) {
+      const live = hasLiveIntegration(name);
+
       return {
         connector: name,
-        status: "completed",
+        status: live ? "completed" : "blocked",
         confirmationRequired: false,
-        dataLabel: "mock data",
-        summary: `${name} read-only mock check completed for ${context.actorRole}.`,
+        dataLabel: live ? "real data" : "mock data",
+        summary: live
+          ? `${name} live read-only configuration is available for ${context.actorRole}.`
+          : `${name} is not connected. Add live credentials before reading real data.`,
       };
     },
     async draft(_context: BotConnectorContext, input: string) {
@@ -32,17 +39,21 @@ export function createMockBotConnector(name: BotConnectorName): BotConnector {
         connector: name,
         status: "drafted",
         confirmationRequired: false,
-        dataLabel: "mock data",
-        summary: `${name} draft prepared in mock mode: ${input}`,
+        dataLabel: hasLiveIntegration(name) ? "real data" : "mock data",
+        summary: `${name} draft prepared locally. Nothing was sent or changed: ${input}`,
       };
     },
     async execute() {
+      const live = hasLiveIntegration(name);
+
       return {
         connector: name,
         status: "blocked",
         confirmationRequired: true,
-        dataLabel: "mock data",
-        summary: `${name} execution blocked. Approval and real integration are required.`,
+        dataLabel: live ? "real data" : "mock data",
+        summary: live
+          ? `${name} execution blocked until explicit owner approval is captured.`
+          : `${name} execution blocked. Live integration credentials are not connected.`,
       };
     },
   };

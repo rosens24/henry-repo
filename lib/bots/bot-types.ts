@@ -4,7 +4,7 @@ import type { ActionResult, UserRole } from "@/lib/actions/action-types";
 export type BotConnectorContext = {
   actorRole: UserRole;
   dryRun: boolean;
-  mockMode: true;
+  mockMode: boolean;
 };
 
 export type BotConnector = {

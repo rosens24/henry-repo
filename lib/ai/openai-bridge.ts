@@ -2,6 +2,7 @@ import { getDailyBriefings } from "@/lib/agent/briefing-generator";
 import { autonomyPolicySummary } from "@/lib/agent/autonomy-policy";
 import { getBotConnectorStatuses } from "@/lib/bots/connectors";
 import { mockDashboardMetrics, mockOperationalSnapshot } from "@/lib/mock-data/dashboard";
+import { hasLiveIntegration } from "@/lib/integrations/live-config";
 import type { AgentRunResult } from "@/lib/agent/types";
 
 type OpenAiBridgeRequest = {
@@ -20,14 +21,14 @@ type OpenAiResponseShape = {
 };
 
 export function isOpenAiBridgeConfigured() {
-  return Boolean(process.env.OPENAI_API_KEY);
+  return hasLiveIntegration("openai");
 }
 
 export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridgeRequest) {
-  if (!process.env.OPENAI_API_KEY) {
+  if (!isOpenAiBridgeConfigured()) {
     return {
       connected: false,
-      content: "OpenAI bridge is not connected. Missing server env: OPENAI_API_KEY.",
+      content: "OpenAI bridge is not connected. Add a live OPENAI_API_KEY server env value.",
     };
   }
 
@@ -42,9 +43,9 @@ export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridge
       instructions: [
         "You are Henry IV, the executive operator for Cleanz. Your style is calm, precise, and polished like a cinematic AI assistant.",
         "Be short, direct, and operational.",
-        "Use only the provided Cleanz dashboard snapshot.",
-        "If data is mock data, label it as mock data.",
-        "Never claim real Stripe, Twilio, Gmail, Supabase, GitHub, Vercel, Cloudflare, or booking data is connected unless the snapshot says it is.",
+        "Use only the provided Cleanz system snapshot.",
+        "When action results say real data, you may call that source live. When action results say mock data, clearly say that source is not live yet.",
+        "Never claim Stripe, Twilio, Gmail, Supabase, GitHub, Vercel, Cloudflare, bookings, payments, messages, or customer data are connected unless connector status or action dataLabel says so.",
         "Never authorize money movement, customer messages, cleaner messages, emails, pricing changes, booking changes, deletes, password/API-key handling, or GitHub pushes without explicit approval.",
         "If the user asks for Codex/XENOMORPH, stage a developer handoff. Do not claim you executed code.",
       ].join("\n"),
@@ -56,7 +57,7 @@ export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridge
               type: "input_text",
               text: JSON.stringify({
                 command,
-                dataLabel: "mock data unless otherwise stated",
+                dataLabel: agent.actions.some((action) => action.dataLabel === "real data") ? "real data included" : "local fallback data only",
                 dashboardMetrics: mockDashboardMetrics,
                 operationalSnapshot: mockOperationalSnapshot,
                 agentMission: agent.mission,

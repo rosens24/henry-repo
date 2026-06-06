@@ -111,7 +111,7 @@ export type CleanzAgentStatus = {
 
 export type BotConnectorStatus = {
   name: BotConnectorName;
-  mode: "mock";
+  mode: "live" | "not_connected";
   readOnlyReady: boolean;
   draftReady: boolean;
   executionReady: boolean;
