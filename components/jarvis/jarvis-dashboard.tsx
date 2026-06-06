@@ -205,15 +205,15 @@ export function JarvisDashboard() {
     <DashboardShell theme={theme}>
       <StartupAnimation show={showStartup} />
       <ApprovalModal action={approvalAction} onClose={() => setApprovalAction(null)} onApprove={approveAction} />
-      <header className="px-3 pt-3">
-        <div className="hud-panel grid gap-4 rounded-md p-4 lg:grid-cols-[1.15fr_1fr_1.35fr]">
-          <div className="flex items-center gap-4">
-            <div className="servo-pulse flex size-14 items-center justify-center rounded-md border border-yellow-300/40 bg-yellow-300/10 shadow-[0_0_28px_rgba(250,204,21,0.34)]">
-              <Bot className="size-7 text-yellow-100" />
+      <header className="px-2 pt-2">
+        <div className="hud-panel grid gap-2 rounded-md p-3 lg:grid-cols-[0.95fr_1fr_1.4fr]">
+          <div className="flex items-center gap-3">
+            <div className="servo-pulse flex size-11 items-center justify-center rounded-md border border-yellow-300/40 bg-yellow-300/10 shadow-[0_0_22px_rgba(250,204,21,0.28)]">
+              <Bot className="size-6 text-yellow-100" />
             </div>
             <div>
-              <p className="machine-text text-lg font-semibold uppercase tracking-[0.24em] text-white">Henry IV</p>
-              <p className="mt-1 text-xs uppercase tracking-[0.2em] text-yellow-200/70">Henry IV machine layer</p>
+              <p className="machine-text text-base font-semibold uppercase tracking-[0.22em] text-white">Henry IV</p>
+              <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-yellow-200/70">Machine layer</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
@@ -223,9 +223,9 @@ export function JarvisDashboard() {
               ["Network", "Secure"],
               ["Uptime", "99.7%"],
             ].map(([label, value]) => (
-              <div key={label} className="data-rail rounded-md border border-yellow-300/15 bg-black/50 px-3 py-2">
+              <div key={label} className="data-rail rounded-md border border-yellow-300/15 bg-black/50 px-2 py-1.5">
                 <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400">{label}</p>
-                <p className="mt-1 text-xs font-semibold uppercase text-zinc-100">{value}</p>
+                <p className="mt-0.5 text-[11px] font-semibold uppercase text-zinc-100">{value}</p>
               </div>
             ))}
           </div>
@@ -237,7 +237,7 @@ export function JarvisDashboard() {
             <StatusPill icon={<Database className="size-4" />} label="OpenAI" value={openAiStatus} />
           </div>
         </div>
-        <nav className="mt-3 flex flex-wrap gap-2 rounded-md border border-yellow-300/15 bg-black/55 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
+        <nav className="mt-2 flex flex-wrap gap-1.5 rounded-md border border-yellow-300/15 bg-black/55 p-1.5 shadow-[0_12px_38px_rgba(0,0,0,0.28)]">
           <MenuButton
             active={activeView === "dashboard"}
             icon={<LayoutDashboard className="size-4" />}
@@ -286,15 +286,15 @@ export function JarvisDashboard() {
         />
       )}
 
-      <section className="px-3 pb-3">
+      <section className="px-2 pb-2">
         <TalkToXenomorph onQueued={queueXenomorphMessage} />
       </section>
 
-      <section className="px-3 pb-3">
+      <section className="px-2 pb-2">
         <AgentNetworkPanel />
       </section>
 
-      <section className="px-5 pb-5 sm:px-8 lg:px-10">
+      <section className="px-2 pb-3 sm:px-3">
         <AgentPanels agent={agentRun} />
       </section>
     </DashboardShell>
@@ -331,10 +331,10 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
 
   return (
     <>
-      <main className="grid flex-1 grid-cols-1 gap-3 p-3 xl:grid-cols-[300px_minmax(520px,1fr)_360px]">
-        <section className="grid content-start gap-3">
+      <main className="grid flex-1 grid-cols-1 gap-2 p-2 xl:grid-cols-[270px_minmax(480px,1fr)_330px]">
+        <section className="grid content-start gap-2">
           <HudSection title="System Overview">
-            <div className="grid gap-2">
+            <div className="grid gap-1.5">
               {dashboardMetrics.map((metric) => (
                 <StatCard key={metric.id} metric={metric} />
               ))}
@@ -345,34 +345,35 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
           </HudSection>
         </section>
 
-        <section className="grid content-start gap-3">
-          <section className="hud-panel machine-core relative flex min-h-[560px] flex-col items-center justify-center overflow-hidden rounded-md p-4 xl:min-h-[720px]">
+        <section className="grid content-start gap-2">
+          <section className="hud-panel machine-core relative flex min-h-[460px] flex-col items-center justify-center overflow-hidden rounded-md p-3 xl:min-h-[610px]">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.18),transparent_36%),radial-gradient(circle_at_64%_50%,rgba(244,244,245,0.12),transparent_28%)]" />
-            <div className="gold-forge" />
+            <div className="precision-shutter" />
+            <div className="radar-slice" />
             <div className="scan-beam" />
             <motion.div
-              className="absolute top-4 left-4 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100"
+              className="absolute top-3 left-3 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-2.5 py-1.5 text-[11px] text-yellow-100"
               animate={{ opacity: [0.55, 1, 0.55] }}
               transition={{ duration: 2.4, repeat: Infinity }}
             >
               <p className="hud-title">Neural Bus</p>
               <p className="mt-1 text-zinc-100">Synchronized</p>
             </motion.div>
-            <div className="absolute top-28 right-8 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100">
+            <div className="absolute top-20 right-5 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-2.5 py-1.5 text-[11px] text-yellow-100">
               <p className="hud-title">Dispatch Engine</p>
               <p className="mt-1">Operational</p>
             </div>
-            <div className="absolute bottom-28 left-10 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100">
+            <div className="absolute bottom-20 left-5 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-2.5 py-1.5 text-[11px] text-yellow-100">
               <p className="hud-title">Field Ops</p>
               <p className="mt-1">18 units tracked</p>
             </div>
-            <div className="absolute bottom-28 right-10 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-3 py-2 text-xs text-yellow-100">
+            <div className="absolute bottom-20 right-5 z-10 rounded-md border border-yellow-300/20 bg-black/70 px-2.5 py-1.5 text-[11px] text-yellow-100">
               <p className="hud-title">Comms Relay</p>
               <p className="mt-1">Read-only</p>
             </div>
             <JarvisOrb status={status} />
             <div className="hud-divider relative z-10 mt-2 w-full max-w-2xl" />
-            <div className="machine-text relative z-10 mt-3 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-yellow-200">
+            <div className="machine-text relative z-10 mt-2 flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-yellow-200">
               <Activity className="size-4" />
               Henry IV core active - read-only mode
             </div>
@@ -380,10 +381,10 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
           </section>
         </section>
 
-        <section className="grid content-start gap-3">
+        <section className="grid content-start gap-2">
           <HudSection title="Command Console">
             <ChatPanel messages={messages} isLoading={isLoading} />
-            <div className="mt-3">
+            <div className="mt-2">
               <CommandInput ref={commandInputRef} onSubmit={(command) => onSubmitCommand(command, "typed")} history={history} isLoading={isLoading} />
             </div>
           </HudSection>
@@ -403,10 +404,10 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
             </div>
           </HudSection>
           <HudSection title="Daily Briefing">
-            <div className="grid gap-3">
+            <div className="grid gap-2">
               {briefings.map((briefing) => (
-                <div key={briefing.id} className="rounded-md border border-yellow-300/15 bg-black/45 p-3">
-                  <div className="flex items-center justify-between gap-3">
+                <div key={briefing.id} className="rounded-md border border-yellow-300/15 bg-black/45 p-2.5">
+                  <div className="flex items-center justify-between gap-2">
                     <p className="text-xs font-semibold text-white">{briefing.title}</p>
                     <span className="text-[10px] uppercase text-zinc-100">{briefing.period === "nightly" ? "Upcoming" : "Completed"}</span>
                   </div>
@@ -427,7 +428,7 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
         </section>
       </main>
 
-      <section className="grid gap-3 px-3 pb-3 xl:grid-cols-[1fr_1fr]">
+      <section className="grid gap-2 px-2 pb-2 xl:grid-cols-[1fr_1fr]">
         <HudSection title="Integrations">
           <IntegrationList connectors={connectorStatuses} />
         </HudSection>
@@ -466,9 +467,9 @@ function DataInputView({ businessData, onBusinessDataChange }: { businessData: B
   }
 
   return (
-    <main className="grid flex-1 gap-3 p-3 xl:grid-cols-[minmax(520px,1fr)_360px]">
+    <main className="grid flex-1 gap-2 p-2 xl:grid-cols-[minmax(520px,1fr)_340px]">
       <HudSection title="Business Data Input">
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-2 md:grid-cols-2">
           <NumberField label="Revenue" value={draft.revenue} onChange={(revenue) => setDraft((current) => ({ ...current, revenue }))} />
           <NumberField label="New Bookings" value={draft.newBookings} onChange={(newBookings) => setDraft((current) => ({ ...current, newBookings }))} />
           <NumberField label="Missed Calls" value={draft.missedCalls} onChange={(missedCalls) => setDraft((current) => ({ ...current, missedCalls }))} />
@@ -485,12 +486,12 @@ function DataInputView({ businessData, onBusinessDataChange }: { businessData: B
             />
           </label>
         </div>
-        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+        <div className="mt-3 grid gap-2 lg:grid-cols-3">
           <ListField label="Completed Tasks" value={draft.completedTasks} onChange={(completedTasks) => setDraft((current) => ({ ...current, completedTasks }))} />
           <ListField label="Approval Needed" value={draft.approvalNeeded} onChange={(approvalNeeded) => setDraft((current) => ({ ...current, approvalNeeded }))} />
           <ListField label="Opportunities" value={draft.opportunities} onChange={(opportunities) => setDraft((current) => ({ ...current, opportunities }))} />
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={saveBusinessData}
@@ -503,7 +504,7 @@ function DataInputView({ businessData, onBusinessDataChange }: { businessData: B
         </div>
       </HudSection>
       <HudSection title="Current Source">
-        <div className="grid gap-3 text-sm text-zinc-300">
+        <div className="grid gap-2 text-sm text-zinc-300">
           <p>This dashboard now uses owner-entered local business data saved on this machine.</p>
           <p>Last updated: <span className="text-yellow-100">{businessData.updatedAt === defaultBusinessData.updatedAt ? "Not saved yet" : businessData.updatedAt}</span></p>
           <p>Connect Stripe, Supabase, Twilio, and Gmail later to automate these fields.</p>
@@ -565,16 +566,16 @@ function VoiceSettingsView({
   onVoiceModeChange,
 }: VoiceSettingsViewProps) {
   return (
-    <main className="grid flex-1 gap-3 p-3 xl:grid-cols-[minmax(420px,1fr)_360px]">
+    <main className="grid flex-1 gap-2 p-2 xl:grid-cols-[minmax(420px,1fr)_340px]">
       <HudSection title="Voice + Settings">
-        <div className="grid gap-3">
+        <div className="grid gap-2">
           {voiceMode ? (
             <>
               <RealtimeVoiceControl onStatusChange={onStatusChange} />
               <VoiceControl status={status} onStatusChange={onStatusChange} onTranscript={(command) => onSubmitCommand(command, "voice")} />
             </>
           ) : (
-            <div className="rounded-md border border-zinc-700/50 bg-black/45 p-4 text-sm text-zinc-300">
+            <div className="rounded-md border border-zinc-700/50 bg-black/45 p-3 text-sm text-zinc-300">
               Voice mode is disabled in settings.
             </div>
           )}
@@ -619,11 +620,11 @@ function speak(text: string) {
 
 function StatusPill({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-md border border-yellow-300/15 bg-black/55 px-3 py-2">
+    <div className="flex items-center gap-2 rounded-md border border-yellow-300/15 bg-black/55 px-2.5 py-1.5">
       <span className="text-yellow-200">{icon}</span>
       <div>
         <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400">{label}</p>
-        <p className="text-xs font-semibold uppercase text-yellow-100">{value}</p>
+        <p className="text-[11px] font-semibold uppercase text-yellow-100">{value}</p>
       </div>
     </div>
   );
@@ -634,7 +635,7 @@ function MenuButton({ active, icon, label, onClick }: { active: boolean; icon: R
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
+      className={`flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] transition ${
         active
           ? "border-yellow-300/40 bg-yellow-300/20 text-yellow-50 shadow-[0_0_18px_rgba(250,204,21,0.18)]"
           : "border-yellow-300/10 bg-black/45 text-zinc-400 hover:border-yellow-300/30 hover:text-yellow-100"
@@ -648,8 +649,8 @@ function MenuButton({ active, icon, label, onClick }: { active: boolean; icon: R
 
 function HudSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="hud-panel rounded-md p-3">
-      <div className="mb-3 flex items-center justify-between">
+    <section className="hud-panel rounded-md p-2.5">
+      <div className="mb-2 flex items-center justify-between">
         <h2 className="hud-title">{title}</h2>
         <Radio className="size-3 text-yellow-300" />
       </div>
@@ -660,7 +661,7 @@ function HudSection({ title, children }: { title: string; children: React.ReactN
 
 function SystemStatus() {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-1.5">
       {["AI Core", "Database", "API Gateway", "Integrations", "Web Services"].map((item) => (
         <div key={item} className="flex items-center justify-between text-xs">
           <span className="flex items-center gap-2 text-zinc-300"><span className="size-2 rounded-full bg-zinc-100" />{item}</span>
@@ -679,9 +680,9 @@ function MachineStatusRail({ status }: { status: AiStatus }) {
   ];
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-1.5">
       {statusItems.map(({ label, value, icon: Icon }, index) => (
-        <div key={label} className="data-rail rounded-md border border-yellow-300/15 bg-black/50 p-3">
+        <div key={label} className="data-rail rounded-md border border-yellow-300/15 bg-black/50 p-2.5">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-300">
               <Icon className="size-4 text-yellow-200" />
@@ -689,7 +690,7 @@ function MachineStatusRail({ status }: { status: AiStatus }) {
             </span>
             <span className="text-xs font-semibold uppercase text-zinc-100">{value}</span>
           </div>
-          <div className="mt-3 flex h-1.5 gap-1">
+          <div className="mt-2 flex h-1.5 gap-1">
             {[0, 1, 2, 3, 4, 5].map((segment) => (
               <span
                 key={segment}

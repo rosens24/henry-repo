@@ -11,8 +11,8 @@ type JarvisOrbProps = {
 
 export function JarvisOrb({ status }: JarvisOrbProps) {
   return (
-    <div className="orb-shell h-[300px] w-full max-w-[520px] sm:h-[420px] xl:h-[520px]">
-      <Canvas camera={{ position: [0, 0, 5.5], fov: 55 }}>
+    <div className="orb-shell h-[260px] w-full max-w-[460px] sm:h-[350px] xl:h-[430px]">
+      <Canvas camera={{ position: [0, 0, 5.9], fov: 52 }}>
         <ambientLight intensity={0.54} />
         <pointLight position={[2, 2, 3]} intensity={2.2} color="#facc15" />
         <pointLight position={[-2, -1, 2]} intensity={1.25} color="#f8fafc" />
