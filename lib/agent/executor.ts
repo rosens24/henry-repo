@@ -2,11 +2,12 @@ import { runSafeAction } from "@/lib/actions/action-registry";
 import { createPendingApprovals } from "@/lib/agent/approval-gate";
 import { checkAgentPermissions } from "@/lib/agent/permissions-gate";
 import { getScheduledAutomations } from "@/lib/agent/scheduler";
-import { getDailyBriefings } from "@/lib/agent/briefing-generator";
 import { getCleanzAgentNetwork } from "@/lib/agent/agent-network";
 import { rememberLogs, rememberMission, rememberPendingApprovals } from "@/lib/agent/memory";
 import { getBotConnectorStatuses } from "@/lib/bots/connectors";
 import { hasLiveIntegration } from "@/lib/integrations/live-config";
+import { buildDailyBriefings } from "@/lib/business/business-data";
+import { getBusinessData } from "@/lib/business/data-store";
 import type { AgentExecutionLog, AgentMission, AgentRunResult, ToolStatus } from "@/lib/agent/types";
 import type { ActionContext } from "@/lib/actions/action-types";
 
@@ -25,6 +26,7 @@ export async function executeAgentMission(mission: AgentMission, context: Action
   const actions = await Promise.all(mission.toolRoute.actionNames.map((actionName) => runSafeAction(actionName, context)));
   const approvals = permission.approvalRequired ? createPendingApprovals(mission.id, mission.toolRoute.actionNames.filter((actionName) => actionName !== "summarizeDay")) : [];
   const executionLogs = buildLogs(updatedMission, permission.allowed, approvals.length);
+  const businessData = await getBusinessData();
 
   rememberMission(updatedMission);
   rememberLogs(executionLogs);
@@ -43,7 +45,7 @@ export async function executeAgentMission(mission: AgentMission, context: Action
     pendingApprovals: approvals,
     executionLogs,
     scheduledAutomations: getScheduledAutomations(),
-    briefings: getDailyBriefings(),
+    briefings: buildDailyBriefings(businessData),
     botConnectors: getBotConnectorStatuses(),
     agentNetwork: getCleanzAgentNetwork(),
     toolStatus: getToolStatus(),

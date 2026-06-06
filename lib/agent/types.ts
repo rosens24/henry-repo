@@ -81,7 +81,7 @@ export type Briefing = {
   completedTasks: string[];
   approvalNeeded: string[];
   opportunities: string[];
-  dataLabel: "mock data";
+  dataLabel: "mock data" | "real data";
 };
 
 export type BotConnectorName = "gmail" | "calendar" | "stripe" | "twilio" | "supabase" | "github" | "vercel" | "cloudflare";

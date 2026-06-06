@@ -1,7 +1,8 @@
-import { mockOperationalSnapshot } from "@/lib/mock-data/dashboard";
 import { createAuditLogEntry, recordAuditEntry } from "@/lib/security/audit-log";
 import { hasPermission, permissionMessage } from "@/lib/security/permissions";
 import { getGithubRepoStatus, getStripeTodayRevenue, getSupabaseStatus, type LiveReadResult } from "@/lib/integrations/real-data";
+import { formatRevenue } from "@/lib/business/business-data";
+import { getBusinessData } from "@/lib/business/data-store";
 import type {
   ActionContext,
   ActionLevel,
@@ -57,33 +58,41 @@ function makeReadResult(
   result: LiveReadResult,
   fallbackSummary: string,
   payload?: unknown,
+  fallbackDataLabel: "mock data" | "real data" = "mock data",
 ) {
-  return makeResult(context, actionName, 1, result.connected ? result.summary : fallbackSummary, ["customer"], result.payload ?? payload, result.dataLabel);
+  return makeResult(context, actionName, 1, result.connected ? result.summary : fallbackSummary, ["customer"], result.payload ?? payload, result.connected ? result.dataLabel : fallbackDataLabel);
 }
 
 export const mockActions: SafeAction[] = [
   {
     name: "getTodayRevenue",
     level: 1,
-    description: "Read mock revenue for today.",
+    description: "Read entered revenue for today.",
     permissionRequired: ["customer"],
     confirmationRequired: false,
     async run(context) {
       const liveRevenue = await getStripeTodayRevenue();
+      const businessData = await getBusinessData();
 
-      return makeReadResult(context, "getTodayRevenue", liveRevenue, `Fallback local estimate is ${mockOperationalSnapshot.revenue}. Connect Stripe for live revenue.`, {
-        revenue: mockOperationalSnapshot.revenue,
-      });
+      return makeReadResult(
+        context,
+        "getTodayRevenue",
+        liveRevenue,
+        `Entered revenue is ${formatRevenue(businessData.revenue)}. Connect Stripe to automate payment reads.`,
+        { revenue: businessData.revenue },
+        "real data",
+      );
     },
   },
   {
     name: "getUpcomingJobs",
     level: 1,
-    description: "Read mock upcoming jobs.",
+    description: "Read entered upcoming jobs.",
     permissionRequired: ["cleaner"],
     confirmationRequired: false,
     async run(context) {
       const supabase = await getSupabaseStatus();
+      const businessData = await getBusinessData();
 
       return makeResult(
         context,
@@ -91,21 +100,22 @@ export const mockActions: SafeAction[] = [
         1,
         supabase.connected
           ? "Supabase is connected, but no bookings table is configured yet. Add SUPABASE_BOOKINGS_TABLE to enable live upcoming jobs."
-          : `${mockOperationalSnapshot.upcomingJobs} local placeholder jobs are upcoming. Connect Supabase for live bookings.`,
+          : `${businessData.upcomingJobs} entered jobs are upcoming. Connect Supabase for automated live bookings.`,
         ["cleaner"],
-        supabase.payload,
-        supabase.dataLabel,
+        supabase.payload ?? businessData,
+        supabase.connected ? supabase.dataLabel : "real data",
       );
     },
   },
   {
     name: "getCleanerAvailability",
     level: 1,
-    description: "Read mock cleaner availability.",
+    description: "Read entered cleaner availability.",
     permissionRequired: ["admin"],
     confirmationRequired: false,
     async run(context) {
       const supabase = await getSupabaseStatus();
+      const businessData = await getBusinessData();
 
       return makeResult(
         context,
@@ -113,17 +123,17 @@ export const mockActions: SafeAction[] = [
         1,
         supabase.connected
           ? "Supabase is connected, but no cleaners table is configured yet. Add SUPABASE_CLEANERS_TABLE to enable live cleaner availability."
-          : `${mockOperationalSnapshot.activeCleaners} local placeholder cleaners are active. Connect Supabase for live cleaner availability.`,
+          : `${businessData.activeCleaners} active cleaners entered. ${businessData.cleanerAvailability}`,
         ["admin"],
-        supabase.payload,
-        supabase.dataLabel,
+        supabase.payload ?? businessData,
+        supabase.connected ? supabase.dataLabel : "real data",
       );
     },
   },
   {
     name: "getUnreadMessages",
     level: 1,
-    description: "Read mock unread message count.",
+    description: "Read unread message count.",
     permissionRequired: ["admin"],
     confirmationRequired: false,
     async run(context) {
@@ -133,11 +143,12 @@ export const mockActions: SafeAction[] = [
   {
     name: "summarizeDay",
     level: 1,
-    description: "Summarize the mock day.",
+    description: "Summarize the entered day.",
     permissionRequired: ["customer"],
     confirmationRequired: false,
     async run(context) {
       const [revenue, supabase, github] = await Promise.all([getStripeTodayRevenue(), getSupabaseStatus(), getGithubRepoStatus()]);
+      const businessData = await getBusinessData();
       const realSources = [revenue, supabase, github].filter((item) => item.connected);
 
       return makeResult(
@@ -146,10 +157,10 @@ export const mockActions: SafeAction[] = [
         1,
         realSources.length
           ? `Live summary sources connected: ${realSources.map((item) => item.summary).join(" ")}`
-          : `Local fallback summary: ${mockOperationalSnapshot.revenue} estimated revenue, ${mockOperationalSnapshot.newBookings} bookings, ${mockOperationalSnapshot.missedCalls} missed calls. Connect Stripe/Supabase/Twilio for live operations.`,
+          : `Entered summary: ${formatRevenue(businessData.revenue)} revenue, ${businessData.newBookings} bookings, ${businessData.missedCalls} missed calls, ${businessData.newLeads} leads, and ${businessData.upcomingJobs} upcoming jobs.`,
         ["customer"],
-        { fallback: mockOperationalSnapshot, live: realSources.map((item) => item.payload) },
-        realSources.length ? "real data" : "mock data",
+        { entered: businessData, live: realSources.map((item) => item.payload) },
+        "real data",
       );
     },
   },
@@ -161,7 +172,7 @@ export const mockActions: SafeAction[] = [
       permissionRequired: ["admin"] as UserRole[],
       confirmationRequired: false,
       async run(context: ActionContext) {
-        return makeResult(context, name, 2, `${name} prepared as mock draft. Nothing was sent or changed.`, ["admin"], {
+        return makeResult(context, name, 2, `${name} prepared as a local draft. Nothing was sent or changed.`, ["admin"], {
           draft: context.command,
         });
       },

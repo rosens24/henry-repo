@@ -30,7 +30,7 @@ export function MobileApprovalQueue() {
       {["sendText", "sendEmail", "issueRefund", "pushToGithub", "changePricing"].map((item) => (
         <div key={item} className="mt-3 rounded-lg border border-amber-200/25 bg-amber-300/10 p-3">
           <p className="font-semibold text-amber-50">{item}</p>
-          <p className="mt-1 text-sm text-amber-100/80">Owner approval required. Mock mode only.</p>
+          <p className="mt-1 text-sm text-amber-100/80">Owner approval required for real-world actions.</p>
         </div>
       ))}
     </section>

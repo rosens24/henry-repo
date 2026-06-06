@@ -43,7 +43,7 @@ export function planMission(command: string, readOnlyMode: boolean): AgentMissio
       { id: "understand", label: "Understand command", status: "complete", detail: `Classified as ${type}.` },
       { id: "route", label: "Route tool", status: "complete", detail: toolRoute.reason },
       { id: "permission", label: "Check permissions", status: "pending", detail: "Role and sensitivity check queued." },
-      { id: "dry-run", label: "Run dry-run", status: "pending", detail: "Mock-only dry-run before any approval." },
+      { id: "dry-run", label: "Run safety check", status: "pending", detail: "Read-only check before any approval-gated action." },
       { id: "approval", label: "Human approval gate", status: "pending", detail: "Sensitive actions stop here." },
       { id: "report", label: "Report result", status: "pending", detail: "Return executive summary and logs." },
     ],

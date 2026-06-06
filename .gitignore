@@ -4,3 +4,4 @@ out
 .env*.local
 dist
 *.log
+data/*.json

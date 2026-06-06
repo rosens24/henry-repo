@@ -43,11 +43,11 @@ function recommendNextActions(actions: ActionResult[]) {
 
 function formatExecutiveResponse(actions: ActionResult[], recommendedActions: ActionResult[], command: string, bridgeStatus: string) {
   if (command.toLowerCase().includes("push to xenomorph")) {
-    return `Mock data only. Developer handoff staged for XENOMORPH. No code was pushed. Approval is required before any repository action. ${bridgeStatus}`;
+    return `Developer handoff staged for XENOMORPH. No code was pushed. Approval is required before any repository action. ${bridgeStatus}`;
   }
 
   const summaries = actions.map((action) => action.summary).join(" ");
-  const dataLabel = actions.every((action) => action.dataLabel === "mock data") ? "Mock data only." : "Real data included.";
+  const dataLabel = actions.every((action) => action.dataLabel === "mock data") ? "Live integrations are not connected yet." : "Real data included.";
   const approvalNote = recommendedActions.length
     ? ` Approval needed: ${recommendedActions.map((action) => action.actionName).join(", ")}.`
     : "";

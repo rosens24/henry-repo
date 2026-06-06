@@ -139,7 +139,7 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
             ))}
           </div>
         ) : (
-          <Empty text="Bot connectors are mock-only and execution-blocked." />
+          <Empty text="Bot connectors are not connected yet; execution remains approval-blocked." />
         )}
       </Panel>
 

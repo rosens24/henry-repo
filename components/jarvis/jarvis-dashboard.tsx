@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Activity, Bot, Cpu, Database, Gauge, LayoutDashboard, Lock, Mic2, Radio, ShieldCheck, Signal, Zap } from "lucide-react";
+import { Activity, Bot, ClipboardList, Cpu, Database, Gauge, LayoutDashboard, Lock, Mic2, Radio, Save, ShieldCheck, Signal, Zap } from "lucide-react";
 import { AgentPanels } from "@/components/agent/agent-panels";
 import { AgentNetworkPanel } from "@/components/agent/agent-network-panel";
 import { BriefingTimeline } from "@/components/dashboard/briefing-timeline";
@@ -17,8 +17,8 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { TalkToXenomorph } from "@/components/jarvis/talk-to-xenomorph";
 import { RealtimeVoiceControl } from "@/components/voice/realtime-voice-control";
 import { VoiceControl } from "@/components/voice/voice-control";
-import { getDailyBriefings } from "@/lib/agent/briefing-generator";
-import { initialMessages, mockDashboardMetrics } from "@/lib/mock-data/dashboard";
+import { initialMessages } from "@/lib/mock-data/dashboard";
+import { buildDailyBriefings, buildDashboardMetrics, defaultBusinessData, parseListInput, type BusinessData } from "@/lib/business/business-data";
 import type { ActionResult } from "@/lib/actions/action-types";
 import type { AgentRunResult, BotConnectorStatus } from "@/lib/agent/types";
 import type { AiStatus, JarvisMessage } from "@/lib/ai/types";
@@ -34,9 +34,10 @@ export function JarvisDashboard() {
   const [approvedHandoffs, setApprovedHandoffs] = useState<string[]>([]);
   const [openAiStatus, setOpenAiStatus] = useState("Bridge not checked");
   const [connectorStatuses, setConnectorStatuses] = useState<BotConnectorStatus[]>(initialConnectorStatuses);
+  const [businessData, setBusinessData] = useState<BusinessData>(defaultBusinessData);
   const [agentRun, setAgentRun] = useState<AgentRunResult | null>(null);
   const [showStartup, setShowStartup] = useState(true);
-  const [activeView, setActiveView] = useState<"dashboard" | "voice">("dashboard");
+  const [activeView, setActiveView] = useState<"dashboard" | "data" | "voice">("dashboard");
   const commandInputRef = useRef<HTMLInputElement>(null);
 
   const isLoading = status === "thinking";
@@ -60,6 +61,22 @@ export function JarvisDashboard() {
     }
 
     void refreshSystemStatus();
+  }, []);
+
+  useEffect(() => {
+    async function refreshBusinessData() {
+      try {
+        const response = await fetch("/api/business-data");
+
+        if (!response.ok) return;
+
+        setBusinessData((await response.json()) as BusinessData);
+      } catch {
+        setOpenAiStatus("Business data load failed");
+      }
+    }
+
+    void refreshBusinessData();
   }, []);
 
   useEffect(() => {
@@ -147,7 +164,7 @@ export function JarvisDashboard() {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "Command channel is online, but the local mock response failed. No external systems were contacted.",
+          content: "Command channel is online, but the local response failed. No external systems were contacted.",
           createdAt: new Date().toISOString(),
           source: "system",
         },
@@ -202,7 +219,7 @@ export function JarvisDashboard() {
           <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
             {[
               ["AI Core", "Online"],
-              ["Database", "Mock"],
+              ["Data", businessData.updatedAt === defaultBusinessData.updatedAt ? "Empty" : "Saved"],
               ["Network", "Secure"],
               ["Uptime", "99.7%"],
             ].map(([label, value]) => (
@@ -215,7 +232,7 @@ export function JarvisDashboard() {
           <div className="flex flex-wrap items-center justify-end gap-2">
             <StatusPill icon={<Signal className="size-4" />} label="Henry IV online" value={statusLabel(status)} />
             <StatusPill icon={<ShieldCheck className="size-4" />} label="Safety" value="Approval required" />
-            <StatusPill icon={<Lock className="size-4" />} label="Security" value="Mock locked" />
+            <StatusPill icon={<Lock className="size-4" />} label="Security" value="Approval locked" />
             <StatusPill icon={<Bot className="size-4" />} label="XENOMORPH" value={approvedHandoffs.length ? "Handoff approved" : "Ready"} />
             <StatusPill icon={<Database className="size-4" />} label="OpenAI" value={openAiStatus} />
           </div>
@@ -226,6 +243,12 @@ export function JarvisDashboard() {
             icon={<LayoutDashboard className="size-4" />}
             label="Dashboard"
             onClick={() => setActiveView("dashboard")}
+          />
+          <MenuButton
+            active={activeView === "data"}
+            icon={<ClipboardList className="size-4" />}
+            label="Data Input"
+            onClick={() => setActiveView("data")}
           />
           <MenuButton
             active={activeView === "voice"}
@@ -245,7 +268,10 @@ export function JarvisDashboard() {
           commandInputRef={commandInputRef}
           onSubmitCommand={submitCommand}
           connectorStatuses={connectorStatuses}
+          businessData={businessData}
         />
+      ) : activeView === "data" ? (
+        <DataInputView key={businessData.updatedAt} businessData={businessData} onBusinessDataChange={setBusinessData} />
       ) : (
         <VoiceSettingsView
           assistantName={assistantName}
@@ -296,16 +322,20 @@ type DashboardViewProps = {
   commandInputRef: React.RefObject<HTMLInputElement | null>;
   onSubmitCommand: (command: string, source: "typed" | "voice") => void;
   connectorStatuses: BotConnectorStatus[];
+  businessData: BusinessData;
 };
 
-function DashboardView({ messages, status, history, isLoading, commandInputRef, onSubmitCommand, connectorStatuses }: DashboardViewProps) {
+function DashboardView({ messages, status, history, isLoading, commandInputRef, onSubmitCommand, connectorStatuses, businessData }: DashboardViewProps) {
+  const dashboardMetrics = buildDashboardMetrics(businessData);
+  const briefings = buildDailyBriefings(businessData);
+
   return (
     <>
       <main className="grid flex-1 grid-cols-1 gap-3 p-3 xl:grid-cols-[300px_minmax(520px,1fr)_360px]">
         <section className="grid content-start gap-3">
           <HudSection title="System Overview">
             <div className="grid gap-2">
-              {mockDashboardMetrics.map((metric) => (
+              {dashboardMetrics.map((metric) => (
                 <StatCard key={metric.id} metric={metric} />
               ))}
             </div>
@@ -346,7 +376,7 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
               <Activity className="size-4" />
               Henry IV core active - read-only mode
             </div>
-            <BriefingTimeline />
+            <BriefingTimeline briefings={briefings} />
           </section>
         </section>
 
@@ -374,7 +404,7 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
           </HudSection>
           <HudSection title="Daily Briefing">
             <div className="grid gap-3">
-              {getDailyBriefings().map((briefing) => (
+              {briefings.map((briefing) => (
                 <div key={briefing.id} className="rounded-md border border-yellow-300/15 bg-black/45 p-3">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs font-semibold text-white">{briefing.title}</p>
@@ -406,6 +436,108 @@ function DashboardView({ messages, status, history, isLoading, commandInputRef, 
         </HudSection>
       </section>
     </>
+  );
+}
+
+function DataInputView({ businessData, onBusinessDataChange }: { businessData: BusinessData; onBusinessDataChange: (data: BusinessData) => void }) {
+  const [draft, setDraft] = useState<BusinessData>(businessData);
+  const [saveState, setSaveState] = useState("Ready");
+
+  async function saveBusinessData() {
+    setSaveState("Saving...");
+
+    try {
+      const response = await fetch("/api/business-data", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+
+      if (!response.ok) {
+        throw new Error("Business data save failed.");
+      }
+
+      const saved = (await response.json()) as BusinessData;
+      onBusinessDataChange(saved);
+      setSaveState("Saved");
+    } catch {
+      setSaveState("Save failed");
+    }
+  }
+
+  return (
+    <main className="grid flex-1 gap-3 p-3 xl:grid-cols-[minmax(520px,1fr)_360px]">
+      <HudSection title="Business Data Input">
+        <div className="grid gap-3 md:grid-cols-2">
+          <NumberField label="Revenue" value={draft.revenue} onChange={(revenue) => setDraft((current) => ({ ...current, revenue }))} />
+          <NumberField label="New Bookings" value={draft.newBookings} onChange={(newBookings) => setDraft((current) => ({ ...current, newBookings }))} />
+          <NumberField label="Missed Calls" value={draft.missedCalls} onChange={(missedCalls) => setDraft((current) => ({ ...current, missedCalls }))} />
+          <NumberField label="Active Cleaners" value={draft.activeCleaners} onChange={(activeCleaners) => setDraft((current) => ({ ...current, activeCleaners }))} />
+          <NumberField label="Upcoming Jobs" value={draft.upcomingJobs} onChange={(upcomingJobs) => setDraft((current) => ({ ...current, upcomingJobs }))} />
+          <NumberField label="New Leads" value={draft.newLeads} onChange={(newLeads) => setDraft((current) => ({ ...current, newLeads }))} />
+          <NumberField label="Open Customer Issues" value={draft.openCustomerIssues} onChange={(openCustomerIssues) => setDraft((current) => ({ ...current, openCustomerIssues }))} />
+          <label className="grid gap-2 text-sm text-zinc-300">
+            Cleaner Availability
+            <input
+              value={draft.cleanerAvailability}
+              onChange={(event) => setDraft((current) => ({ ...current, cleanerAvailability: event.target.value }))}
+              className="rounded-md border border-yellow-300/20 bg-black/60 px-3 py-2 text-white outline-none focus:border-yellow-200/50"
+            />
+          </label>
+        </div>
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          <ListField label="Completed Tasks" value={draft.completedTasks} onChange={(completedTasks) => setDraft((current) => ({ ...current, completedTasks }))} />
+          <ListField label="Approval Needed" value={draft.approvalNeeded} onChange={(approvalNeeded) => setDraft((current) => ({ ...current, approvalNeeded }))} />
+          <ListField label="Opportunities" value={draft.opportunities} onChange={(opportunities) => setDraft((current) => ({ ...current, opportunities }))} />
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={saveBusinessData}
+            className="data-rail flex items-center gap-2 rounded-md border border-yellow-300/30 bg-yellow-300/15 px-4 py-2 text-sm font-semibold text-yellow-50"
+          >
+            <Save className="size-4" />
+            Save Data
+          </button>
+          <span className="text-xs uppercase tracking-[0.16em] text-zinc-400">{saveState}</span>
+        </div>
+      </HudSection>
+      <HudSection title="Current Source">
+        <div className="grid gap-3 text-sm text-zinc-300">
+          <p>This dashboard now uses owner-entered local business data saved on this machine.</p>
+          <p>Last updated: <span className="text-yellow-100">{businessData.updatedAt === defaultBusinessData.updatedAt ? "Not saved yet" : businessData.updatedAt}</span></p>
+          <p>Connect Stripe, Supabase, Twilio, and Gmail later to automate these fields.</p>
+        </div>
+      </HudSection>
+    </main>
+  );
+}
+
+function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
+  return (
+    <label className="grid gap-2 text-sm text-zinc-300">
+      {label}
+      <input
+        type="number"
+        min="0"
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="rounded-md border border-yellow-300/20 bg-black/60 px-3 py-2 text-white outline-none focus:border-yellow-200/50"
+      />
+    </label>
+  );
+}
+
+function ListField({ label, value, onChange }: { label: string; value: string[]; onChange: (value: string[]) => void }) {
+  return (
+    <label className="grid gap-2 text-sm text-zinc-300">
+      {label}
+      <textarea
+        value={value.join("\n")}
+        onChange={(event) => onChange(parseListInput(event.target.value))}
+        className="min-h-32 resize-y rounded-md border border-yellow-300/20 bg-black/60 px-3 py-2 text-white outline-none focus:border-yellow-200/50"
+      />
+    </label>
   );
 }
 

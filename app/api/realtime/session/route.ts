@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getDailyBriefings } from "@/lib/agent/briefing-generator";
 import { autonomyPolicySummary } from "@/lib/agent/autonomy-policy";
 import { getBotConnectorStatuses } from "@/lib/bots/connectors";
-import { mockDashboardMetrics, mockOperationalSnapshot } from "@/lib/mock-data/dashboard";
 import { checkRateLimit } from "@/lib/security/rate-limit";
+import { buildDailyBriefings, buildDashboardMetrics } from "@/lib/business/business-data";
+import { getBusinessData } from "@/lib/business/data-store";
 
 export async function POST(request: Request) {
   const rateLimit = checkRateLimit("realtime-session", 10, 60_000);
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     JSON.stringify({
       type: "realtime",
       model: process.env.OPENAI_REALTIME_MODEL || "gpt-realtime-2",
-      instructions: buildHenryInstructions(),
+      instructions: await buildHenryInstructions(),
       audio: {
         output: {
           voice: process.env.OPENAI_REALTIME_VOICE || "cedar",
@@ -72,21 +72,23 @@ export async function POST(request: Request) {
   });
 }
 
-function buildHenryInstructions() {
+async function buildHenryInstructions() {
+  const businessData = await getBusinessData();
+
   return [
     "You are Henry IV, the live voice operator for Cleanz.",
     "Speak like a calm, precise, cinematic executive AI operator.",
     "Do not interrupt the founder. Wait for the user to finish speaking before responding.",
     "Be concise. Lead with operational value.",
     "Use only the provided Cleanz snapshot unless the user provides more context.",
-    "Label mock data as mock data.",
+    "Treat entered business data as real local owner-entered data.",
     "Never claim real Stripe, Twilio, Gmail, Supabase, GitHub, Vercel, Cloudflare, or booking data is connected unless explicitly provided.",
     "Never execute payments, refunds, pricing changes, customer messages, cleaner messages, booking changes, deploys, GitHub pushes, data deletion, passwords, or API-key handling without explicit scoped approval.",
     JSON.stringify({
-      dataLabel: "mock data unless otherwise stated",
-      dashboardMetrics: mockDashboardMetrics,
-      operationalSnapshot: mockOperationalSnapshot,
-      briefings: getDailyBriefings(),
+      dataLabel: "owner-entered local business data",
+      dashboardMetrics: buildDashboardMetrics(businessData),
+      operationalSnapshot: businessData,
+      briefings: buildDailyBriefings(businessData),
       botConnectors: getBotConnectorStatuses(),
       autonomyPolicy: autonomyPolicySummary(),
     }),
