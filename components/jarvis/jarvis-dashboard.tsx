@@ -212,7 +212,7 @@ export function JarvisDashboard() {
               <Bot className="size-7 text-yellow-100" />
             </div>
             <div>
-              <p className="machine-text text-lg font-semibold uppercase tracking-[0.24em] text-white">Cleanz Command Center</p>
+              <p className="machine-text text-lg font-semibold uppercase tracking-[0.24em] text-white">Henry IV</p>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-yellow-200/70">Henry IV machine layer</p>
             </div>
           </div>
