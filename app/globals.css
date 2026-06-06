@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  background: #030711;
+  color: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: #020617;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.jarvis-grid {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(14, 165, 233, 0.18), transparent 34%),
+    radial-gradient(circle at 18% 70%, rgba(16, 185, 129, 0.1), transparent 30%),
+    radial-gradient(circle at 84% 52%, rgba(217, 70, 239, 0.11), transparent 26%),
+    linear-gradient(rgba(125, 211, 252, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.045) 1px, transparent 1px),
+    #030711;
+  background-size: auto, auto, auto, 56px 56px, 56px 56px, auto;
+  animation: grid-drift 32s linear infinite;
+}
+
+.glass-panel {
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.76), rgba(3, 7, 18, 0.66)),
+    rgba(3, 7, 18, 0.72);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.hud-panel {
+  position: relative;
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.76), rgba(3, 7, 18, 0.84)),
+    rgba(3, 7, 18, 0.86);
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.04),
+    0 18px 54px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(18px);
+}
+
+.hud-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, rgba(34, 211, 238, 0.24), transparent 18%, transparent 82%, rgba(16, 185, 129, 0.2)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 32%);
+  opacity: 0.32;
+}
+
+.hud-title {
+  color: #a5f3fc;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hud-divider {
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.72), rgba(16, 185, 129, 0.52), transparent);
+  height: 1px;
+}
+
+.control-room-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.control-room-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, transparent, rgba(251, 191, 36, 0.09), transparent),
+    radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.14), transparent 38%);
+}
+
+.orb-shell {
+  filter: drop-shadow(0 0 32px rgba(34, 211, 238, 0.36));
+}
+
+.machine-core {
+  isolation: isolate;
+}
+
+.machine-core::before,
+.machine-core::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  pointer-events: none;
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  clip-path: polygon(0 12%, 12% 0, 88% 0, 100% 12%, 100% 88%, 88% 100%, 12% 100%, 0 88%);
+  animation: machine-frame 5.8s ease-in-out infinite;
+}
+
+.machine-core::after {
+  inset: 44px;
+  border-color: rgba(16, 185, 129, 0.18);
+  animation-duration: 8.2s;
+  animation-direction: reverse;
+}
+
+.scan-beam {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(34, 211, 238, 0.0) 38%, rgba(34, 211, 238, 0.2) 50%, rgba(16, 185, 129, 0.08) 54%, transparent 68%);
+  mix-blend-mode: screen;
+  animation: scan-beam 4.4s ease-in-out infinite;
+}
+
+.data-rail {
+  position: relative;
+  overflow: hidden;
+}
+
+.data-rail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.24), transparent);
+  transform: translateX(-100%);
+  animation: rail-sweep 3.6s ease-in-out infinite;
+}
+
+.servo-pulse {
+  animation: servo-pulse 2.6s ease-in-out infinite;
+}
+
+.machine-text {
+  text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  to {
+    background-position: 0 0, 0 0, 0 0, 56px 112px, 112px 56px, 0 0;
+  }
+}
+
+@keyframes machine-frame {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.015);
+  }
+}
+
+@keyframes scan-beam {
+  0%,
+  100% {
+    transform: translateY(-68%);
+    opacity: 0;
+  }
+  18%,
+  78% {
+    opacity: 1;
+  }
+  88% {
+    transform: translateY(68%);
+    opacity: 0;
+  }
+}
+
+@keyframes rail-sweep {
+  0%,
+  22% {
+    transform: translateX(-110%);
+  }
+  74%,
+  100% {
+    transform: translateX(110%);
+  }
+}
+
+@keyframes servo-pulse {
+  0%,
+  100% {
+    opacity: 0.76;
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.16);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 26px rgba(34, 211, 238, 0.34);
+  }
+}
