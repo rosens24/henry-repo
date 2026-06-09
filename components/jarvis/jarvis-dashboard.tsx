@@ -699,8 +699,8 @@ function VoiceSettingsView({
         <div className="grid gap-2">
           {voiceMode ? (
             <>
-              <RealtimeVoiceControl onStatusChange={onStatusChange} />
               <VoiceControl status={status} onStatusChange={onStatusChange} onTranscript={(command) => onSubmitCommand(command, "voice")} />
+              <RealtimeVoiceControl onStatusChange={onStatusChange} />
             </>
           ) : (
             <div className="rounded-md border border-zinc-700/50 bg-black/45 p-3 text-sm text-zinc-300">

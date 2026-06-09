@@ -13,7 +13,7 @@ type VoiceControlProps = {
 export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceControlProps) {
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const [lastHeard, setLastHeard] = useState("Nothing heard yet.");
-  const [voiceState, setVoiceState] = useState("Ready. Click mic, allow microphone, then speak. Henry IV will not interrupt you.");
+  const [voiceState, setVoiceState] = useState("Free voice ready. Click mic, allow microphone, speak, and Henry IV will answer through the connected AI provider.");
   const [manualCommand, setManualCommand] = useState("");
   const [sttHealth, setSttHealth] = useState<"checking" | "ready" | "blocked" | "degraded">("checking");
   const [speechSupported, setSpeechSupported] = useState(false);
@@ -256,7 +256,7 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
             onKeyDown={(event) => {
               if (event.key === "Enter") submitManualVoiceCommand();
             }}
-            placeholder="Typed voice fallback..."
+            placeholder="Type if mic is blocked..."
             className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-zinc-500"
           />
         </label>

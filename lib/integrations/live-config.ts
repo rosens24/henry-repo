@@ -1,4 +1,5 @@
 export type IntegrationName =
+  | "gemini"
   | "openai"
   | "gmail"
   | "calendar"
@@ -12,6 +13,7 @@ export type IntegrationName =
   | "acquisition-crm";
 
 const integrationEnv: Record<IntegrationName, string[]> = {
+  gemini: ["GEMINI_API_KEY"],
   openai: ["OPENAI_API_KEY"],
   gmail: ["GMAIL_CLIENT_ID", "GMAIL_CLIENT_SECRET"],
   calendar: ["GOOGLE_CALENDAR_ID"],

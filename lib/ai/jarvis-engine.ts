@@ -1,7 +1,7 @@
 import { executeAgentMission } from "@/lib/agent/executor";
 import { planMission } from "@/lib/agent/planner";
 import { appendHenryFeedTurn } from "@/lib/ai/conversation-store";
-import { getOpenAiOperatorResponse } from "@/lib/ai/openai-bridge";
+import { getOperatorResponse } from "@/lib/ai/operator-bridge";
 import type { ActionResult } from "@/lib/actions/action-types";
 import type { JarvisApiRequest, JarvisApiResponse } from "@/lib/ai/types";
 
@@ -14,7 +14,7 @@ export async function runJarvisCommand(request: JarvisApiRequest): Promise<Jarvi
   const mission = planMission(request.command, request.readOnlyMode);
   const agent = await executeAgentMission(mission, context);
   const recommendedActions = recommendNextActions(agent.actions);
-  const openAiBridge = await getOpenAiOperatorResponse({ command: request.command, agent });
+  const openAiBridge = await getOperatorResponse({ command: request.command, agent });
   const responseContent = openAiBridge.connected ? openAiBridge.content : formatAiUnavailableResponse(openAiBridge.content, openAiBridge.statusCode);
   const message = {
     id: crypto.randomUUID(),
@@ -33,6 +33,7 @@ export async function runJarvisCommand(request: JarvisApiRequest): Promise<Jarvi
       actorRole: request.actorRole,
       readOnlyMode: request.readOnlyMode,
       openAiConnected: openAiBridge.connected,
+      aiProvider: openAiBridge.provider,
       missionId: agent.mission.id,
       pendingApprovalCount: agent.pendingApprovals.length,
     },

@@ -31,7 +31,7 @@ export function RealtimeVoiceControl({ onStatusChange }: RealtimeVoiceControlPro
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const [state, setState] = useState<RealtimeState>("idle");
-  const [statusText, setStatusText] = useState("Live Henry IV voice is ready. Start a session, then speak naturally.");
+  const [statusText, setStatusText] = useState("OpenAI live voice needs paid OpenAI quota. Use Browser Voice below for the free Gemini-backed agent.");
   const [lastSignal, setLastSignal] = useState("No live session yet.");
   const [sessionEvents, setSessionEvents] = useState<string[]>([]);
 
@@ -44,11 +44,25 @@ export function RealtimeVoiceControl({ onStatusChange }: RealtimeVoiceControlPro
     }
 
     setState("connecting");
-    setStatusText("Requesting microphone for live Henry IV voice...");
-    setLastSignal("Preparing WebRTC voice channel.");
+    setStatusText("Checking OpenAI Realtime voice availability...");
+    setLastSignal("OpenAI Realtime voice requires OpenAI quota.");
     onStatusChange?.("listening");
 
     try {
+      const statusResponse = await fetch("/api/system/status", { cache: "no-store" });
+      const systemStatus = (await statusResponse.json()) as { openAiConnected?: boolean; openAiDetail?: string };
+
+      if (!systemStatus.openAiConnected) {
+        setState("blocked");
+        setStatusText("OpenAI live voice is blocked. Use Browser Voice below for the free Gemini agent.");
+        setLastSignal(systemStatus.openAiDetail || "OpenAI Realtime is not connected.");
+        onStatusChange?.("idle");
+        return;
+      }
+
+      setStatusText("Requesting microphone for live Henry IV voice...");
+      setLastSignal("Preparing WebRTC voice channel.");
+
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
