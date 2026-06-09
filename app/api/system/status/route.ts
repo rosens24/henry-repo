@@ -7,6 +7,7 @@ export async function GET() {
 
   return NextResponse.json({
     openAiConfigured: isOpenAiBridgeConfigured(),
+    openAiAuthenticated: openAiHealth.authenticated,
     openAiConnected: openAiHealth.connected,
     openAiStatusCode: openAiHealth.statusCode,
     openAiDetail: openAiHealth.detail,

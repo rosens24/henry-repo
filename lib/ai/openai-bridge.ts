@@ -21,6 +21,14 @@ type OpenAiResponseShape = {
   }>;
 };
 
+type OpenAiErrorShape = {
+  error?: {
+    message?: string;
+    type?: string;
+    code?: string | null;
+  };
+};
+
 export function isOpenAiBridgeConfigured() {
   return hasLiveIntegration("openai");
 }
@@ -29,6 +37,7 @@ export async function checkOpenAiBridgeHealth() {
   if (!isOpenAiBridgeConfigured()) {
     return {
       configured: false,
+      authenticated: false,
       connected: false,
       statusCode: 0,
       detail: "OPENAI_API_KEY is not configured.",
@@ -36,22 +45,60 @@ export async function checkOpenAiBridgeHealth() {
   }
 
   try {
-    const response = await fetch("https://api.openai.com/v1/models", {
+    const authResponse = await fetch("https://api.openai.com/v1/models", {
       headers: {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       cache: "no-store",
     });
 
+    if (!authResponse.ok) {
+      return {
+        configured: true,
+        authenticated: false,
+        connected: false,
+        statusCode: authResponse.status,
+        detail: `OpenAI API key rejected with status ${authResponse.status}.`,
+      };
+    }
+
+    const probeResponse = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL || "gpt-5",
+        input: "Health check. Reply ok.",
+        max_output_tokens: 16,
+      }),
+      cache: "no-store",
+    });
+
+    if (!probeResponse.ok) {
+      const errorDetail = await readOpenAiError(probeResponse);
+
+      return {
+        configured: true,
+        authenticated: true,
+        connected: false,
+        statusCode: probeResponse.status,
+        detail: errorDetail,
+      };
+    }
+
     return {
       configured: true,
-      connected: response.ok,
-      statusCode: response.status,
-      detail: response.ok ? "OpenAI API key accepted." : `OpenAI API key rejected with status ${response.status}.`,
+      authenticated: true,
+      connected: true,
+      statusCode: probeResponse.status,
+      detail: "OpenAI API key accepted and response generation is available.",
     };
   } catch {
     return {
       configured: true,
+      authenticated: false,
       connected: false,
       statusCode: 0,
       detail: "OpenAI health check could not reach the API.",
@@ -120,9 +167,11 @@ export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridge
   });
 
   if (!response.ok) {
+    const errorDetail = await readOpenAiError(response);
+
     return {
       connected: false,
-      content: `OpenAI bridge request failed with status ${response.status}. Check OPENAI_API_KEY and OPENAI_MODEL.`,
+      content: errorDetail,
       statusCode: response.status,
     };
   }
@@ -146,4 +195,20 @@ function extractResponseText(data: OpenAiResponseShape) {
     .filter(Boolean)
     .join("\n")
     .trim();
+}
+
+async function readOpenAiError(response: Response) {
+  const raw = await response.text().catch(() => "");
+
+  try {
+    const parsed = JSON.parse(raw) as OpenAiErrorShape;
+    const error = parsed.error;
+    const code = error?.code ? ` code ${error.code}` : "";
+    const type = error?.type ? ` type ${error.type}` : "";
+    const message = error?.message || raw || "No OpenAI error body returned.";
+
+    return `OpenAI request failed with status ${response.status}${type}${code}: ${message}`;
+  } catch {
+    return `OpenAI request failed with status ${response.status}: ${raw || "No OpenAI error body returned."}`;
+  }
 }
