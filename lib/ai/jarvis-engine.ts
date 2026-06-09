@@ -15,9 +15,7 @@ export async function runJarvisCommand(request: JarvisApiRequest): Promise<Jarvi
   const agent = await executeAgentMission(mission, context);
   const recommendedActions = recommendNextActions(agent.actions);
   const openAiBridge = await getOpenAiOperatorResponse({ command: request.command, agent });
-  const responseContent = openAiBridge.connected
-    ? openAiBridge.content
-    : formatExecutiveResponse(agent.actions, recommendedActions, agent.mission.command, openAiBridge.content);
+  const responseContent = openAiBridge.connected ? openAiBridge.content : formatAiUnavailableResponse(openAiBridge.content, openAiBridge.statusCode);
   const message = {
     id: crypto.randomUUID(),
     role: "assistant" as const,
@@ -57,16 +55,10 @@ function recommendNextActions(actions: ActionResult[]) {
   return [];
 }
 
-function formatExecutiveResponse(actions: ActionResult[], recommendedActions: ActionResult[], command: string, bridgeStatus: string) {
-  if (command.toLowerCase().includes("push to xenomorph")) {
-    return `Developer handoff staged for XENOMORPH. No code was pushed. Approval is required before any repository action. ${bridgeStatus}`;
+function formatAiUnavailableResponse(bridgeStatus: string, statusCode?: number) {
+  if (statusCode === 401) {
+    return "Henry IV's real AI core is blocked because Railway's OPENAI_API_KEY is being rejected by OpenAI. I will not fake an answer from the local machine. Replace OPENAI_API_KEY with a valid key, then voice and chat will use the real agent.";
   }
 
-  const summaries = actions.map((action) => action.summary).join(" ");
-  const dataLabel = actions.every((action) => action.dataLabel === "mock data") ? "Live integrations are not connected yet." : "Real data included.";
-  const approvalNote = recommendedActions.length
-    ? ` Approval needed: ${recommendedActions.map((action) => action.actionName).join(", ")}.`
-    : "";
-
-  return `${dataLabel} ${summaries}${approvalNote} ${bridgeStatus}`.trim();
+  return `Henry IV's real AI core is not available. I will not fake an answer from the local machine. ${bridgeStatus}`;
 }

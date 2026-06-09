@@ -39,5 +39,6 @@ export type JarvisApiResponse = {
   openAiBridge: {
     connected: boolean;
     content: string;
+    statusCode?: number;
   };
 };

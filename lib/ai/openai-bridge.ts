@@ -25,11 +25,46 @@ export function isOpenAiBridgeConfigured() {
   return hasLiveIntegration("openai");
 }
 
+export async function checkOpenAiBridgeHealth() {
+  if (!isOpenAiBridgeConfigured()) {
+    return {
+      configured: false,
+      connected: false,
+      statusCode: 0,
+      detail: "OPENAI_API_KEY is not configured.",
+    };
+  }
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/models", {
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      cache: "no-store",
+    });
+
+    return {
+      configured: true,
+      connected: response.ok,
+      statusCode: response.status,
+      detail: response.ok ? "OpenAI API key accepted." : `OpenAI API key rejected with status ${response.status}.`,
+    };
+  } catch {
+    return {
+      configured: true,
+      connected: false,
+      statusCode: 0,
+      detail: "OpenAI health check could not reach the API.",
+    };
+  }
+}
+
 export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridgeRequest) {
   if (!isOpenAiBridgeConfigured()) {
     return {
       connected: false,
       content: "OpenAI bridge is not connected. Add a live OPENAI_API_KEY server env value.",
+      statusCode: 0,
     };
   }
 
@@ -88,6 +123,7 @@ export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridge
     return {
       connected: false,
       content: `OpenAI bridge request failed with status ${response.status}. Check OPENAI_API_KEY and OPENAI_MODEL.`,
+      statusCode: response.status,
     };
   }
 
@@ -97,6 +133,7 @@ export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridge
   return {
     connected: true,
     content: content || "OpenAI bridge returned no text. Check model configuration.",
+    statusCode: response.status,
   };
 }
 

@@ -172,11 +172,11 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
       });
 
       if (!response.ok) {
-        setVoiceState("Henry IV API test failed. Check the dev server console.");
+        setVoiceState("Henry IV API test failed. Check the OpenAI connection status.");
         return;
       }
 
-      const result = (await response.json()) as { message: { content: string } };
+      const result = (await response.json()) as { message: { content: string }; openAiBridge?: { connected: boolean } };
       setVoiceState(result.message.content);
       unlockSpeech(result.message.content);
     } catch {

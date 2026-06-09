@@ -109,7 +109,7 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
             ))}
           </div>
         ) : (
-          <Empty text="Tools are in mock/blocked state until integrations are approved." />
+          <Empty text="Tools wait for real integrations and approvals." />
         )}
       </Panel>
 
@@ -124,7 +124,7 @@ export function AgentPanels({ agent }: AgentPanelsProps) {
             ))}
           </div>
         ) : (
-          <Empty text="Morning, midday, and nightly briefings are mock scheduled." />
+          <Empty text="Morning, midday, and nightly briefings load after the first command." />
         )}
       </Panel>
 

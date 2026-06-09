@@ -47,7 +47,7 @@ export async function executeAgentMission(mission: AgentMission, context: Action
     scheduledAutomations: getScheduledAutomations(),
     briefings: buildDailyBriefings(businessData),
     botConnectors: getBotConnectorStatuses(),
-    agentNetwork: getCleanzAgentNetwork(),
+    agentNetwork: getCleanzAgentNetwork(hasLiveIntegration("openai")),
     toolStatus: getToolStatus(),
     securityMode: {
       mode: mission.mode,
@@ -90,7 +90,7 @@ function getToolStatus(): ToolStatus[] {
   return [
     { name: "knowledge", status: hasLiveIntegration("openai") ? "ready" : "not_connected", detail: hasLiveIntegration("openai") ? "OpenAI operator bridge connected." : "OpenAI API key not connected." },
     { name: "dashboard", status: liveConnectorCount > 0 ? "ready" : "not_connected", detail: liveConnectorCount > 0 ? `${liveConnectorCount} live connector(s) configured.` : "No live business data connectors configured." },
-    { name: "drafting", status: hasLiveIntegration("openai") ? "ready" : "mock", detail: hasLiveIntegration("openai") ? "Drafts can use OpenAI output and remain unsent." : "Drafts use local fallback logic." },
+    { name: "drafting", status: hasLiveIntegration("openai") ? "ready" : "not_connected", detail: hasLiveIntegration("openai") ? "Drafts can use OpenAI output and remain unsent." : "Drafting waits for a real OpenAI connection." },
     { name: "automation", status: "blocked", detail: "Real-world actions require approval and integrations." },
     { name: "code", status: hasLiveIntegration("github") ? "blocked" : "not_connected", detail: hasLiveIntegration("github") ? "GitHub connected; pushes still require approval." : "GitHub token not connected." },
     { name: "scheduler", status: "not_connected", detail: "Scheduling is placeholder only." },
