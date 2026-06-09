@@ -1,5 +1,6 @@
 import { executeAgentMission } from "@/lib/agent/executor";
 import { planMission } from "@/lib/agent/planner";
+import { appendHenryFeedTurn } from "@/lib/ai/conversation-store";
 import { getOpenAiOperatorResponse } from "@/lib/ai/openai-bridge";
 import type { ActionResult } from "@/lib/actions/action-types";
 import type { JarvisApiRequest, JarvisApiResponse } from "@/lib/ai/types";
@@ -17,19 +18,34 @@ export async function runJarvisCommand(request: JarvisApiRequest): Promise<Jarvi
   const responseContent = openAiBridge.connected
     ? openAiBridge.content
     : formatExecutiveResponse(agent.actions, recommendedActions, agent.mission.command, openAiBridge.content);
+  const message = {
+    id: crypto.randomUUID(),
+    role: "assistant" as const,
+    content: responseContent,
+    createdAt: new Date().toISOString(),
+    source: "system" as const,
+  };
+
+  await appendHenryFeedTurn({
+    user: request.command,
+    assistant: responseContent,
+    source: request.source,
+    channel: request.source === "voice" ? "browser_voice" : "chat",
+    metadata: {
+      actorRole: request.actorRole,
+      readOnlyMode: request.readOnlyMode,
+      openAiConnected: openAiBridge.connected,
+      missionId: agent.mission.id,
+      pendingApprovalCount: agent.pendingApprovals.length,
+    },
+  });
 
   return {
     actions: agent.actions,
     recommendedActions,
     agent,
     openAiBridge,
-    message: {
-      id: crypto.randomUUID(),
-      role: "assistant",
-      content: responseContent,
-      createdAt: new Date().toISOString(),
-      source: "system",
-    },
+    message,
   };
 }
 

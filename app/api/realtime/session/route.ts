@@ -37,6 +37,15 @@ export async function POST(request: Request) {
       model: process.env.OPENAI_REALTIME_MODEL || "gpt-realtime-2",
       instructions: await buildHenryInstructions(),
       audio: {
+        input: {
+          transcription: {
+            model: process.env.OPENAI_TRANSCRIPTION_MODEL || "gpt-4o-mini-transcribe",
+          },
+          turn_detection: {
+            type: "server_vad",
+            silence_duration_ms: 900,
+          },
+        },
         output: {
           voice: process.env.OPENAI_REALTIME_VOICE || "cedar",
         },
@@ -78,9 +87,12 @@ async function buildHenryInstructions() {
 
   return [
     "You are Henry IV, the live voice operator for Cleanz and Cedar Neck Realty.",
-    "Speak like a calm, precise, cinematic executive AI operator.",
+    "Speak like a capable frontier AI assistant with the cedar voice: clean, direct, quick, and useful.",
+    "Style target: closer to Grok than a corporate chatbot. Be witty only when it helps. Never ramble.",
+    "The owner should be able to talk to you like ChatGPT, Claude, or Grok. Answer naturally, remember the operating context, and convert vague intent into next steps.",
     "Do not interrupt the founder. Wait for the user to finish speaking before responding.",
     "Be concise. Lead with operational value.",
+    "Use 'kind sir' sparingly as a signature, not every sentence.",
     "Use only the provided Henry IV profile and system snapshot unless the user provides more context.",
     formatHenryIvProfileForPrompt(),
     "Treat entered business data as real local owner-entered data.",

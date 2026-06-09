@@ -10,6 +10,21 @@ type RealtimeVoiceControlProps = {
 
 type RealtimeState = "idle" | "connecting" | "live" | "blocked" | "error";
 
+type RealtimeEvent = {
+  type?: string;
+  transcript?: string;
+  text?: string;
+  delta?: string;
+  item?: {
+    role?: "user" | "assistant" | "system";
+    content?: Array<{ transcript?: string; text?: string }>;
+  };
+  response?: {
+    output?: Array<{ content?: Array<{ transcript?: string; text?: string }> }>;
+  };
+  error?: { message?: string };
+};
+
 export function RealtimeVoiceControl({ onStatusChange }: RealtimeVoiceControlProps) {
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -82,7 +97,12 @@ export function RealtimeVoiceControl({ onStatusChange }: RealtimeVoiceControlPro
         appendEvent("Realtime data channel opened.");
       };
       dataChannel.onmessage = (event) => {
-        appendEvent(summarizeRealtimeEvent(event.data));
+        const realtimeSummary = summarizeRealtimeEvent(event.data);
+        appendEvent(realtimeSummary.message);
+
+        if (realtimeSummary.feedEntry) {
+          void persistRealtimeFeedEntry(realtimeSummary.feedEntry);
+        }
       };
 
       const offer = await peerConnection.createOffer();
@@ -223,26 +243,77 @@ function stateLabel(state: RealtimeState) {
   return labels[state];
 }
 
-function summarizeRealtimeEvent(rawData: string) {
+function summarizeRealtimeEvent(rawData: string): {
+  message: string;
+  feedEntry?: {
+    role: "user" | "assistant" | "system";
+    content: string;
+    metadata?: Record<string, unknown>;
+  };
+} {
   try {
-    const event = JSON.parse(rawData) as { type?: string; transcript?: string; text?: string; error?: { message?: string } };
+    const event = JSON.parse(rawData) as RealtimeEvent;
+    const type = event.type || "realtime.event";
 
     if (event.error?.message) {
-      return `Realtime error: ${event.error.message}`;
+      return {
+        message: `Realtime error: ${event.error.message}`,
+        feedEntry: { role: "system", content: event.error.message, metadata: { type } },
+      };
     }
 
-    if (event.transcript) {
-      return `Transcript: ${event.transcript}`;
+    const transcript = extractTranscript(event);
+
+    if (transcript) {
+      const isUser = type.includes("input_audio") || event.item?.role === "user";
+      const role = isUser ? "user" : "assistant";
+
+      return {
+        message: `${role === "user" ? "You" : "Henry IV"}: ${transcript}`,
+        feedEntry: { role, content: transcript, metadata: { type } },
+      };
     }
 
     if (event.text) {
-      return `Henry IV: ${event.text}`;
+      return {
+        message: `Henry IV: ${event.text}`,
+        feedEntry: { role: "assistant", content: event.text, metadata: { type } },
+      };
     }
 
-    return event.type ? `Realtime event: ${event.type}` : "Realtime event received.";
+    return { message: event.type ? `Realtime event: ${event.type}` : "Realtime event received." };
   } catch {
-    return "Realtime event received.";
+    return { message: "Realtime event received." };
   }
+}
+
+function extractTranscript(event: RealtimeEvent) {
+  return (
+    event.transcript ||
+    event.text ||
+    event.item?.content?.map((content) => content.transcript || content.text).filter(Boolean).join(" ").trim() ||
+    event.response?.output
+      ?.flatMap((output) => output.content ?? [])
+      .map((content) => content.transcript || content.text)
+      .filter(Boolean)
+      .join(" ")
+      .trim() ||
+    ""
+  );
+}
+
+async function persistRealtimeFeedEntry(entry: { role: "user" | "assistant" | "system"; content: string; metadata?: Record<string, unknown> }) {
+  await fetch("/api/codex/feed", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      role: entry.role,
+      content: entry.content,
+      source: "voice",
+      channel: "realtime_voice",
+      metadata: entry.metadata,
+    }),
+  }).catch(() => undefined);
 }
 
 function trimDetail(detail: string) {
