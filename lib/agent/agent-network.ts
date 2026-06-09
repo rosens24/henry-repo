@@ -69,6 +69,17 @@ export function getCleanzAgentNetwork(): CleanzAgentStatus[] {
       executionHistory: ["Prepared mock customer issue summary"],
     },
     {
+      name: "Acquisitions Agent",
+      domain: "Cedar Neck Realty deal sourcing, single-family leads, multifamily leads, seller and broker follow-up",
+      health: "mock",
+      activeMission: "Prepare acquisition sourcing briefs and rank follow-up targets.",
+      taskQueue: ["Build deal watchlist", "Draft seller outreach", "Prepare underwriting checklist"],
+      reportingCadence: "Morning and on command",
+      permissionScope: "Read, recommend, and draft; outreach approval-required",
+      memoryStatus: "mock memory",
+      executionHistory: ["Initialized Cedar Neck Realty acquisition workflow"],
+    },
+    {
       name: "Developer Agent",
       domain: "Code, architecture, reliability, deployment readiness",
       health: "mock",

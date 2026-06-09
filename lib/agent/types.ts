@@ -84,7 +84,17 @@ export type Briefing = {
   dataLabel: "mock data" | "real data";
 };
 
-export type BotConnectorName = "gmail" | "calendar" | "stripe" | "twilio" | "supabase" | "github" | "vercel" | "cloudflare";
+export type BotConnectorName =
+  | "gmail"
+  | "calendar"
+  | "stripe"
+  | "twilio"
+  | "supabase"
+  | "github"
+  | "vercel"
+  | "cloudflare"
+  | "real-estate-data"
+  | "acquisition-crm";
 
 export type CleanzAgentName =
   | "CEO Agent"
@@ -93,6 +103,7 @@ export type CleanzAgentName =
   | "Marketing Agent"
   | "Finance Agent"
   | "Customer Success Agent"
+  | "Acquisitions Agent"
   | "Developer Agent"
   | "Recruiting Agent"
   | "Scheduling Agent";

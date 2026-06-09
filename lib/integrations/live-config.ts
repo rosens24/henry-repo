@@ -1,4 +1,15 @@
-export type IntegrationName = "openai" | "gmail" | "calendar" | "stripe" | "twilio" | "supabase" | "github" | "vercel" | "cloudflare";
+export type IntegrationName =
+  | "openai"
+  | "gmail"
+  | "calendar"
+  | "stripe"
+  | "twilio"
+  | "supabase"
+  | "github"
+  | "vercel"
+  | "cloudflare"
+  | "real-estate-data"
+  | "acquisition-crm";
 
 const integrationEnv: Record<IntegrationName, string[]> = {
   openai: ["OPENAI_API_KEY"],
@@ -10,6 +21,8 @@ const integrationEnv: Record<IntegrationName, string[]> = {
   github: ["GITHUB_TOKEN"],
   vercel: ["VERCEL_TOKEN"],
   cloudflare: ["CLOUDFLARE_API_TOKEN"],
+  "real-estate-data": ["REAL_ESTATE_DATA_API_KEY"],
+  "acquisition-crm": ["ACQUISITION_CRM_API_KEY"],
 };
 
 export function hasLiveIntegration(name: IntegrationName) {

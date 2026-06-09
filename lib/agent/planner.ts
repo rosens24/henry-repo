@@ -7,6 +7,9 @@ export function classifyCommand(command: string): AgentCommandType {
 
   if (normalized.includes("push") || normalized.includes("github") || normalized.includes("code")) return "code_action";
   if (normalized.includes("send") || normalized.includes("refund") || normalized.includes("cancel") || normalized.includes("delete") || normalized.includes("charge")) return "real_world_action";
+  if (normalized.includes("health") || normalized.includes("food") || normalized.includes("exercise") || normalized.includes("mental") || normalized.includes("body")) return "dashboard_query";
+  if (normalized.includes("crm") || normalized.includes("companies") || normalized.includes("company") || normalized.includes("sales call")) return "dashboard_query";
+  if (normalized.includes("deal") || normalized.includes("acquisition") || normalized.includes("multifamily") || normalized.includes("multi family") || normalized.includes("single family") || normalized.includes("cedar neck")) return "dashboard_query";
   if (normalized.includes("draft") || normalized.includes("write") || normalized.includes("prepare")) return "draft_action";
   if (normalized.includes("revenue") || normalized.includes("job") || normalized.includes("booking") || normalized.includes("cleaner") || normalized.includes("message")) return "dashboard_query";
 

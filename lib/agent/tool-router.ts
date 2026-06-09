@@ -9,6 +9,10 @@ export function routeTool(command: string, type: AgentCommandType): AgentToolRou
   if (normalized.includes("job") || normalized.includes("booking")) actions.add("getUpcomingJobs");
   if (normalized.includes("cleaner") || normalized.includes("availability")) actions.add("getCleanerAvailability");
   if (normalized.includes("message") || normalized.includes("inbox") || normalized.includes("calls")) actions.add("getUnreadMessages");
+  if (normalized.includes("crm") || normalized.includes("companies") || normalized.includes("company") || normalized.includes("sales call")) actions.add("reviewCleanzCrm");
+  if (normalized.includes("health") || normalized.includes("food") || normalized.includes("exercise") || normalized.includes("mental") || normalized.includes("body")) actions.add("reviewHealthOs");
+  if (normalized.includes("deal") || normalized.includes("acquisition") || normalized.includes("multifamily") || normalized.includes("multi family") || normalized.includes("single family") || normalized.includes("cedar neck") || normalized.includes("cedarneck")) actions.add("sourceRealEstateDeals");
+  if ((normalized.includes("seller") || normalized.includes("broker") || normalized.includes("owner") || normalized.includes("agent")) && (normalized.includes("draft") || normalized.includes("write") || normalized.includes("outreach") || normalized.includes("email"))) actions.add("draftAcquisitionOutreach");
   if (normalized.includes("customer") && normalized.includes("text")) actions.add("draftCustomerText");
   if (normalized.includes("cleaner") && normalized.includes("text")) actions.add("draftCleanerText");
   if (normalized.includes("email")) actions.add("draftEmail");

@@ -4,6 +4,7 @@ import { getBotConnectorStatuses } from "@/lib/bots/connectors";
 import { checkRateLimit } from "@/lib/security/rate-limit";
 import { buildDailyBriefings, buildDashboardMetrics } from "@/lib/business/business-data";
 import { getBusinessData } from "@/lib/business/data-store";
+import { formatHenryIvProfileForPrompt } from "@/lib/profile/henry-profile";
 
 export async function POST(request: Request) {
   const rateLimit = checkRateLimit("realtime-session", 10, 60_000);
@@ -76,11 +77,12 @@ async function buildHenryInstructions() {
   const businessData = await getBusinessData();
 
   return [
-    "You are Henry IV, the live voice operator for Cleanz.",
+    "You are Henry IV, the live voice operator for Cleanz and Cedar Neck Realty.",
     "Speak like a calm, precise, cinematic executive AI operator.",
     "Do not interrupt the founder. Wait for the user to finish speaking before responding.",
     "Be concise. Lead with operational value.",
-    "Use only the provided Cleanz snapshot unless the user provides more context.",
+    "Use only the provided Henry IV profile and system snapshot unless the user provides more context.",
+    formatHenryIvProfileForPrompt(),
     "Treat entered business data as real local owner-entered data.",
     "Never claim real Stripe, Twilio, Gmail, Supabase, GitHub, Vercel, Cloudflare, or booking data is connected unless explicitly provided.",
     "Never execute payments, refunds, pricing changes, customer messages, cleaner messages, booking changes, deploys, GitHub pushes, data deletion, passwords, or API-key handling without explicit scoped approval.",

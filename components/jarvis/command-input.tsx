@@ -30,14 +30,14 @@ export const CommandInput = forwardRef<HTMLInputElement, CommandInputProps>(func
             ref={ref}
             value={command}
             onChange={(event) => setCommand(event.target.value)}
-            placeholder="Ask Henry IV to summarize today, check bookings, or prep a cleaner update..."
-            className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-zinc-500"
+            placeholder="Ask Henry IV..."
+            className="min-w-0 flex-1 bg-transparent text-base text-white outline-none placeholder:text-zinc-500 sm:text-xs"
           />
         </label>
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex items-center justify-center gap-2 rounded-md border border-yellow-300/30 bg-yellow-300/15 px-4 py-2 text-xs font-semibold text-yellow-50 transition hover:bg-yellow-300/24"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-yellow-300/30 bg-yellow-300/15 px-4 py-2 text-sm font-semibold text-yellow-50 transition hover:bg-yellow-300/24 sm:min-h-0 sm:text-xs"
         >
           <SendHorizontal className="size-4" />
           {isLoading ? "Running" : "Execute"}

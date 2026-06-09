@@ -3,6 +3,7 @@ import { getBotConnectorStatuses } from "@/lib/bots/connectors";
 import { hasLiveIntegration } from "@/lib/integrations/live-config";
 import { buildDailyBriefings, buildDashboardMetrics } from "@/lib/business/business-data";
 import { getBusinessData } from "@/lib/business/data-store";
+import { formatHenryIvProfileForPrompt } from "@/lib/profile/henry-profile";
 import type { AgentRunResult } from "@/lib/agent/types";
 
 type OpenAiBridgeRequest = {
@@ -43,9 +44,10 @@ export async function getOpenAiOperatorResponse({ command, agent }: OpenAiBridge
     body: JSON.stringify({
       model: process.env.OPENAI_MODEL || "gpt-5",
       instructions: [
-        "You are Henry IV, the executive operator for Cleanz. Your style is calm, precise, and polished like a cinematic AI assistant.",
+        "You are Henry IV, the executive operator for Cleanz and Cedar Neck Realty. Your style is calm, precise, and polished like a cinematic AI assistant.",
         "Be short, direct, and operational.",
-        "Use only the provided Cleanz system snapshot.",
+        "Use only the provided Henry IV profile and system snapshot.",
+        formatHenryIvProfileForPrompt(),
         "When action results say real data, you may call that source live. When action results say mock data, clearly say that source is not live yet.",
         "Never claim Stripe, Twilio, Gmail, Supabase, GitHub, Vercel, Cloudflare, bookings, payments, messages, or customer data are connected unless connector status or action dataLabel says so.",
         "Never authorize money movement, customer messages, cleaner messages, emails, pricing changes, booking changes, deletes, password/API-key handling, or GitHub pushes without explicit approval.",

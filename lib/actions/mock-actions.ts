@@ -1,8 +1,9 @@
 import { createAuditLogEntry, recordAuditEntry } from "@/lib/security/audit-log";
 import { hasPermission, permissionMessage } from "@/lib/security/permissions";
 import { getGithubRepoStatus, getStripeTodayRevenue, getSupabaseStatus, type LiveReadResult } from "@/lib/integrations/real-data";
-import { formatRevenue } from "@/lib/business/business-data";
+import { formatRevenue, getCedarNeckDealGoal, getCleanzCrmGoal } from "@/lib/business/business-data";
 import { getBusinessData } from "@/lib/business/data-store";
+import { henryIvProfile } from "@/lib/profile/henry-profile";
 import type {
   ActionContext,
   ActionLevel,
@@ -141,6 +142,98 @@ export const mockActions: SafeAction[] = [
     },
   },
   {
+    name: "sourceRealEstateDeals",
+    level: 1,
+    description: "Prepare a Cedar Neck Realty acquisition sourcing brief for single-family and multifamily deals.",
+    permissionRequired: ["admin"],
+    confirmationRequired: false,
+    async run(context) {
+      const cedarNeck = henryIvProfile.businesses.find((business) => business.name === "Cedar Neck Realty");
+      const businessData = await getBusinessData();
+      const dealGoal = getCedarNeckDealGoal(businessData);
+
+      return makeResult(
+        context,
+        "sourceRealEstateDeals",
+        1,
+        `Cedar Neck Realty acquisition mode is ready. ${dealGoal.completed}/${dealGoal.currentGoal} deals are logged for this monthly target. Source and rank single-family and multifamily opportunities by seller motivation, value-add potential, asking-price gap, rent upside, deferred maintenance, and follow-up urgency. Live property data is not connected yet.`,
+        ["admin"],
+        {
+          business: cedarNeck,
+          command: context.command,
+          dealGoal,
+          savedDeals: businessData.cedarNeckDeals,
+          dealTypes: ["single-family", "multifamily"],
+          sourcingLanes: ["off-market owner outreach", "broker follow-up", "distressed/value-add watchlist", "expired or stale listings", "referral pipeline"],
+          qualificationChecklist: ["address", "unit count", "asking price or seller expectation", "rent roll", "expenses", "occupancy", "repairs", "seller motivation", "next follow-up"],
+        },
+      );
+    },
+  },
+  {
+    name: "reviewCleanzCrm",
+    level: 1,
+    description: "Review Cleanz sales CRM progress and next calls.",
+    permissionRequired: ["admin"],
+    confirmationRequired: false,
+    async run(context) {
+      const businessData = await getBusinessData();
+      const crmGoal = getCleanzCrmGoal(businessData);
+      const followUps = businessData.cleanzCrm.filter((company) => ["follow_up", "proposal"].includes(company.status));
+
+      return makeResult(
+        context,
+        "reviewCleanzCrm",
+        1,
+        `Cleanz CRM has ${crmGoal.completed}/${crmGoal.currentGoal} companies logged for this monthly target. ${crmGoal.remaining} left before the goal steps to ${crmGoal.nextGoalAfterHit}. ${followUps.length} companies need follow-up or proposal attention.`,
+        ["admin"],
+        { crmGoal, companies: businessData.cleanzCrm, followUps },
+        "real data",
+      );
+    },
+  },
+  {
+    name: "reviewHealthOs",
+    level: 1,
+    description: "Review the owner's health operating system.",
+    permissionRequired: ["customer"],
+    confirmationRequired: false,
+    async run(context) {
+      const businessData = await getBusinessData();
+
+      return makeResult(
+        context,
+        "reviewHealthOs",
+        1,
+        "Health OS loaded: keep food simple, protect mental clarity, move daily, train consistently, and review weekly. This is owner-entered local guidance, not medical advice.",
+        ["customer"],
+        { healthOs: businessData.healthOs },
+        "real data",
+      );
+    },
+  },
+  {
+    name: "draftAcquisitionOutreach",
+    level: 2,
+    description: "Draft Cedar Neck Realty acquisition outreach without sending it.",
+    permissionRequired: ["admin"],
+    confirmationRequired: false,
+    async run(context) {
+      return makeResult(
+        context,
+        "draftAcquisitionOutreach",
+        2,
+        "Cedar Neck Realty acquisition outreach drafted locally. Nothing was sent. Use it for seller, owner, broker, or agent follow-up after reviewing the target property and offer strategy.",
+        ["admin"],
+        {
+          draftPurpose: "real estate acquisition outreach",
+          command: context.command,
+          suggestedStructure: ["direct intro", "property-specific reason for outreach", "simple purchase interest", "request for call or property details", "clear Cedar Neck Realty sign-off"],
+        },
+      );
+    },
+  },
+  {
     name: "summarizeDay",
     level: 1,
     description: "Summarize the entered day.",
@@ -149,6 +242,8 @@ export const mockActions: SafeAction[] = [
     async run(context) {
       const [revenue, supabase, github] = await Promise.all([getStripeTodayRevenue(), getSupabaseStatus(), getGithubRepoStatus()]);
       const businessData = await getBusinessData();
+      const crmGoal = getCleanzCrmGoal(businessData);
+      const dealGoal = getCedarNeckDealGoal(businessData);
       const realSources = [revenue, supabase, github].filter((item) => item.connected);
 
       return makeResult(
@@ -157,9 +252,9 @@ export const mockActions: SafeAction[] = [
         1,
         realSources.length
           ? `Live summary sources connected: ${realSources.map((item) => item.summary).join(" ")}`
-          : `Entered summary: ${formatRevenue(businessData.revenue)} revenue, ${businessData.newBookings} bookings, ${businessData.missedCalls} missed calls, ${businessData.newLeads} leads, and ${businessData.upcomingJobs} upcoming jobs.`,
+          : `Entered summary: ${formatRevenue(businessData.revenue)} revenue, ${businessData.newBookings} bookings, ${businessData.missedCalls} missed calls, ${businessData.newLeads} leads, ${businessData.upcomingJobs} upcoming jobs, Cleanz CRM ${crmGoal.completed}/${crmGoal.currentGoal}, and Cedar Neck deals ${dealGoal.completed}/${dealGoal.currentGoal}.`,
         ["customer"],
-        { entered: businessData, live: realSources.map((item) => item.payload) },
+        { entered: businessData, live: realSources.map((item) => item.payload), goals: { cleanz: crmGoal, cedarNeck: dealGoal } },
         "real data",
       );
     },

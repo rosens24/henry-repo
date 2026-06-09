@@ -9,6 +9,8 @@ export const botConnectors = {
   github: createMockBotConnector("github"),
   vercel: createMockBotConnector("vercel"),
   cloudflare: createMockBotConnector("cloudflare"),
+  realEstateData: createMockBotConnector("real-estate-data"),
+  acquisitionCrm: createMockBotConnector("acquisition-crm"),
 };
 
 export function getBotConnectorStatuses() {
