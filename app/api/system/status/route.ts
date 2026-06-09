@@ -1,17 +1,23 @@
 import { NextResponse } from "next/server";
 import { getBotConnectorStatuses } from "@/lib/bots/connectors";
+import { checkXaiBridgeHealth, isXaiBridgeConfigured } from "@/lib/ai/xai-bridge";
 import { checkGeminiBridgeHealth, isGeminiBridgeConfigured } from "@/lib/ai/gemini-bridge";
 import { checkOpenAiBridgeHealth, isOpenAiBridgeConfigured } from "@/lib/ai/openai-bridge";
 
 export async function GET() {
-  const [geminiHealth, openAiHealth] = await Promise.all([
+  const [xaiHealth, geminiHealth, openAiHealth] = await Promise.all([
+    checkXaiBridgeHealth(),
     checkGeminiBridgeHealth(),
     checkOpenAiBridgeHealth(),
   ]);
 
   return NextResponse.json({
-    aiProvider: geminiHealth.connected ? "gemini" : openAiHealth.connected ? "openai" : "none",
-    aiConnected: geminiHealth.connected || openAiHealth.connected,
+    aiProvider: xaiHealth.connected ? "xai" : geminiHealth.connected ? "gemini" : openAiHealth.connected ? "openai" : "none",
+    aiConnected: xaiHealth.connected || geminiHealth.connected || openAiHealth.connected,
+    xaiConfigured: isXaiBridgeConfigured(),
+    xaiConnected: xaiHealth.connected,
+    xaiStatusCode: xaiHealth.statusCode,
+    xaiDetail: xaiHealth.detail,
     geminiConfigured: isGeminiBridgeConfigured(),
     geminiConnected: geminiHealth.connected,
     geminiStatusCode: geminiHealth.statusCode,

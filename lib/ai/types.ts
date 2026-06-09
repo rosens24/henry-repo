@@ -37,7 +37,7 @@ export type JarvisApiResponse = {
   recommendedActions: ActionResult[];
   agent: AgentRunResult;
   openAiBridge: {
-    provider?: "openai" | "gemini";
+    provider?: "openai" | "gemini" | "xai";
     connected: boolean;
     content: string;
     statusCode?: number;

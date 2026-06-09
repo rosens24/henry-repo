@@ -4,7 +4,8 @@
 
 Henry IV has two voice paths:
 
-- Free browser voice uses local speech recognition, sends the transcript to `/api/jarvis`, uses Gemini when `GEMINI_API_KEY` is configured, and speaks the answer with browser TTS.
+- Browser voice uses local speech recognition, sends the transcript to `/api/jarvis`, uses Grok when `XAI_API_KEY` is configured, and speaks the answer with browser TTS.
+- Gemini remains available as a backup provider when `GEMINI_API_KEY` is configured.
 - OpenAI Live Realtime voice uses `OPENAI_REALTIME_MODEL`, `OPENAI_REALTIME_VOICE=cedar`, and server-side `OPENAI_API_KEY`; it requires OpenAI API quota.
 
 Stored Henry IV turns are available for Codex at:

@@ -1,4 +1,5 @@
 export type IntegrationName =
+  | "xai"
   | "gemini"
   | "openai"
   | "gmail"
@@ -13,6 +14,7 @@ export type IntegrationName =
   | "acquisition-crm";
 
 const integrationEnv: Record<IntegrationName, string[]> = {
+  xai: ["XAI_API_KEY"],
   gemini: ["GEMINI_API_KEY"],
   openai: ["OPENAI_API_KEY"],
   gmail: ["GMAIL_CLIENT_ID", "GMAIL_CLIENT_SECRET"],
