@@ -15,3 +15,14 @@ curl http://localhost:3000/api/codex/feed
 ```
 
 On Railway, set `DATABASE_URL` to persist the feed in Postgres. Without `DATABASE_URL`, local dev stores it in `data/henry-conversation-feed.json`.
+
+## Testing
+
+Use the Voice + Settings screen to run the AI Provider status check and the live Henry IV agent test.
+
+The same checks are available through:
+
+```bash
+curl https://henryiv.up.railway.app/api/system/status
+curl https://henryiv.up.railway.app/api/codex/feed
+```

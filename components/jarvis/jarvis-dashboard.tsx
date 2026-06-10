@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BriefcaseBusiness, Building2, ClipboardList, HeartPulse, LayoutDashboard, Mic2, Plus, Radio, Save, Trash2 } from "lucide-react";
 import { ApprovalModal } from "@/components/jarvis/approval-modal";
+import { AiProviderStatus } from "@/components/dashboard/ai-provider-status";
 import { CommandInput } from "@/components/jarvis/command-input";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { JarvisOrb } from "@/components/jarvis/jarvis-orb";
@@ -697,6 +698,7 @@ function VoiceSettingsView({
     <main className="grid flex-1 gap-2 p-2 xl:grid-cols-[minmax(420px,1fr)_340px]">
       <HudSection title="Voice + Settings">
         <div className="grid gap-2">
+          <AiProviderStatus />
           {voiceMode ? (
             <>
               <VoiceControl status={status} onStatusChange={onStatusChange} onTranscript={(command) => onSubmitCommand(command, "voice")} />
