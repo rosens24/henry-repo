@@ -12,9 +12,7 @@ export async function getOperatorResponse({ command, agent }: OperatorBridgeRequ
   if (isXaiBridgeConfigured()) {
     const xai = await getXaiOperatorResponse({ command, agent });
 
-    if (xai.connected) return xai;
-
-    if (!isGeminiBridgeConfigured() && !isOpenAiBridgeConfigured()) return xai;
+    return xai;
   }
 
   if (isGeminiBridgeConfigured()) {
