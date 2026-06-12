@@ -20,9 +20,27 @@ On Railway, set `DATABASE_URL` to persist the feed in Postgres. Without `DATABAS
 
 Use the Voice + Settings screen to run the AI Provider status check and the live Henry IV agent test.
 
+The Voice panel now separates browser mic/STT, browser TTS, and live AI provider status. If Grok/xAI returns `403`, the xAI team needs credits/licenses before Henry IV can answer through Grok.
+
 The same checks are available through:
 
 ```bash
 curl https://henryiv.up.railway.app/api/system/status
 curl https://henryiv.up.railway.app/api/codex/feed
 ```
+
+## Push And Deploy
+
+Final changes are committed and pushed to:
+
+```bash
+git push origin main
+```
+
+Railway deploy verification uses:
+
+```bash
+curl https://henryiv.up.railway.app/api/system/status
+```
+
+See `docs/runbooks/push-and-deploy.md` for the full workflow.

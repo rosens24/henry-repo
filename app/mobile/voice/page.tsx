@@ -10,6 +10,7 @@ export default function MobileVoicePage() {
   const [response, setResponse] = useState("Tap the mic and speak. Real-world actions stay approval-gated.");
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [typedCommand, setTypedCommand] = useState("");
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
@@ -20,15 +21,22 @@ export default function MobileVoicePage() {
   }, []);
 
   async function runVoiceCommand(command: string) {
-    setStatus(`Heard: ${command}`);
+    const trimmedCommand = command.trim();
+
+    if (!trimmedCommand) {
+      setStatus("Type a command or tap the mic first.");
+      return;
+    }
+
+    setStatus(`Heard: ${trimmedCommand}`);
     const apiResponse = await fetch("/api/jarvis", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ command, source: "voice", actorRole: "owner", readOnlyMode: true }),
+      body: JSON.stringify({ command: trimmedCommand, source: "voice", actorRole: "owner", readOnlyMode: true }),
     });
 
     if (!apiResponse.ok) {
-      setResponse("Henry IV API rejected the command. No action executed.");
+      setResponse("Henry IV API rejected the command. Check AI Provider status. No action executed.");
       return;
     }
 
@@ -44,8 +52,7 @@ export default function MobileVoicePage() {
 
     if (!SpeechRecognition) {
       setIsListening(false);
-      setStatus("Speech recognition is blocked in this browser. Sending fallback command.");
-      void runVoiceCommand("Henry IV push to XENOMORPH");
+      setStatus("Speech recognition is blocked in this browser. Type the command below.");
       return;
     }
 
@@ -54,13 +61,19 @@ export default function MobileVoicePage() {
     recognition.interimResults = false;
     recognition.lang = "en-US";
     recognition.onresult = (event) => {
-      const transcript = event.results[0]?.[0]?.transcript || "Henry IV push to XENOMORPH";
+      const transcript = event.results[0]?.[0]?.transcript?.trim() || "";
       setIsListening(false);
+
+      if (!transcript) {
+        setStatus("I did not catch that. Try again or type the command below.");
+        return;
+      }
+
       void runVoiceCommand(transcript);
     };
-    recognition.onerror = () => {
+    recognition.onerror = (event) => {
       setIsListening(false);
-      void runVoiceCommand("Henry IV push to XENOMORPH");
+      setStatus(`Voice error: ${event.error}. Type the command below.`);
     };
     recognition.start();
   }
@@ -79,11 +92,35 @@ export default function MobileVoicePage() {
         </button>
         <p className="mt-5 text-sm text-zinc-300">{isListening ? "Listening for Henry IV..." : status}</p>
         <p className="mt-2 text-xs text-zinc-500">{speechSupported ? "Browser speech recognition ready." : "Browser speech recognition may be blocked; fallback command is available."}</p>
+        <div className="mt-4 flex gap-2">
+          <input
+            value={typedCommand}
+            onChange={(event) => setTypedCommand(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                void runVoiceCommand(typedCommand);
+                setTypedCommand("");
+              }
+            }}
+            placeholder="Type Henry IV command..."
+            className="min-w-0 flex-1 rounded-lg border border-yellow-300/20 bg-black/60 px-3 py-2 text-sm text-white outline-none placeholder:text-zinc-500"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              void runVoiceCommand(typedCommand);
+              setTypedCommand("");
+            }}
+            className="rounded-lg border border-yellow-300/25 bg-yellow-300/10 px-3 py-2 text-sm font-semibold text-yellow-50"
+          >
+            Send
+          </button>
+        </div>
         <div className="mt-4 rounded-lg border border-yellow-300/20 bg-yellow-300/10 p-4 text-left">
           <p className="flex items-center gap-2 text-sm font-semibold text-amber-100"><Volume2 className="size-4" />Henry IV Response</p>
           <p className="mt-2 text-sm text-zinc-300">{response}</p>
         </div>
-        <p className="mt-3 text-xs text-zinc-500">Mock mobile voice mode. No real code, messages, payments, or booking changes execute without approval.</p>
+        <p className="mt-3 text-xs text-zinc-500">Mobile voice uses the real Henry IV API. No real code, messages, payments, or booking changes execute without approval.</p>
       </section>
     </MobileShell>
   );

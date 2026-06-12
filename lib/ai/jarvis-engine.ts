@@ -58,7 +58,15 @@ function recommendNextActions(actions: ActionResult[]) {
 
 function formatAiUnavailableResponse(bridgeStatus: string, statusCode?: number) {
   if (statusCode === 401) {
-    return "Henry IV's real AI core is blocked because Railway's OPENAI_API_KEY is being rejected by OpenAI. I will not fake an answer from the local machine. Replace OPENAI_API_KEY with a valid key, then voice and chat will use the real agent.";
+    return "Henry IV's real AI core is blocked because the configured provider rejected the API key. I will not fake an answer from the local machine. Replace the provider key, then voice and chat will use the real agent.";
+  }
+
+  if (statusCode === 403) {
+    return `Henry IV's real AI core is blocked because the configured provider refused access. I will not fake an answer from the local machine. ${bridgeStatus}`;
+  }
+
+  if (statusCode === 429) {
+    return `Henry IV's real AI core is blocked because the configured provider is out of quota or rate limited. I will not fake an answer from the local machine. ${bridgeStatus}`;
   }
 
   return `Henry IV's real AI core is not available. I will not fake an answer from the local machine. ${bridgeStatus}`;

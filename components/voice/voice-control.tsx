@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Keyboard, Mic, MicOff, Radio, Volume2 } from "lucide-react";
+import { Keyboard, Mic, MicOff, Radio, RefreshCw, Volume2 } from "lucide-react";
 import type { AiStatus } from "@/lib/ai/types";
 
 type VoiceControlProps = {
@@ -16,6 +16,8 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
   const [voiceState, setVoiceState] = useState("Free voice ready. Click mic, allow microphone, speak, and Henry IV will answer through the connected AI provider.");
   const [manualCommand, setManualCommand] = useState("");
   const [sttHealth, setSttHealth] = useState<"checking" | "ready" | "blocked" | "degraded">("checking");
+  const [providerHealth, setProviderHealth] = useState<VoiceProviderHealth | null>(null);
+  const [providerChecking, setProviderChecking] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [ttsSupported, setTtsSupported] = useState(false);
   const [supportChecked, setSupportChecked] = useState(false);
@@ -32,6 +34,38 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
 
     return () => window.cancelAnimationFrame(frameId);
   }, []);
+
+  useEffect(() => {
+    void refreshProviderHealth();
+  }, []);
+
+  async function refreshProviderHealth() {
+    setProviderChecking(true);
+
+    try {
+      const response = await fetch("/api/system/status", { cache: "no-store" });
+
+      if (!response.ok) throw new Error("Provider status failed.");
+
+      const systemStatus = (await response.json()) as SystemStatusResponse;
+      const activeProvider = getActiveProvider(systemStatus);
+      const detail = getProviderDetail(systemStatus, activeProvider);
+
+      setProviderHealth({
+        connected: systemStatus.aiConnected,
+        provider: activeProvider,
+        detail,
+      });
+    } catch {
+      setProviderHealth({
+        connected: false,
+        provider: "none",
+        detail: "Provider status could not be checked from this browser session.",
+      });
+    } finally {
+      setProviderChecking(false);
+    }
+  }
 
   async function toggleListening() {
     if (isListening) {
@@ -85,7 +119,7 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
       }
 
       setLastHeard(transcript);
-      setVoiceState("Command heard. Henry IV is answering...");
+      setVoiceState(providerHealth?.connected ? "Command heard. Henry IV is answering..." : "Command heard. Real AI provider is currently blocked; Henry IV will explain the provider error.");
       onTranscript(transcript);
     };
     recognition.onerror = (event) => {
@@ -172,13 +206,14 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
       });
 
       if (!response.ok) {
-        setVoiceState("Henry IV API test failed. Check the OpenAI connection status.");
+        setVoiceState("Henry IV API test failed. Check the AI Provider panel for the live provider error.");
         return;
       }
 
-      const result = (await response.json()) as { message: { content: string }; openAiBridge?: { connected: boolean } };
+      const result = (await response.json()) as { message: { content: string }; openAiBridge?: { connected: boolean; provider?: string } };
       setVoiceState(result.message.content);
       unlockSpeech(result.message.content);
+      await refreshProviderHealth();
     } catch {
       setVoiceState("Henry IV API test failed before a response came back.");
     }
@@ -244,7 +279,31 @@ export function VoiceControl({ status, onStatusChange, onTranscript }: VoiceCont
           {supportChecked ? sttLabel(sttHealth, speechSupported) : "STT check"}
         </span>
         <span className="rounded-lg border border-zinc-600/40 bg-black/45 px-2 py-2">{supportChecked ? (ttsSupported ? "TTS ready" : "TTS blocked") : "TTS check"}</span>
-        <span className="rounded-lg border border-zinc-600/40 bg-black/45 px-2 py-2">Wake: Henry IV</span>
+        <span className={`rounded-lg border px-2 py-2 ${providerHealth?.connected ? "border-emerald-300/30 bg-emerald-300/10 text-emerald-100" : "border-amber-300/30 bg-amber-300/10 text-amber-100"}`}>
+          {providerHealth?.connected ? `${providerLabel(providerHealth.provider)} live` : "AI blocked"}
+        </span>
+      </div>
+      <div className="mt-3 rounded-lg border border-zinc-600/35 bg-black/45 p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-300">Voice Route</p>
+            <p className="mt-1 text-xs leading-5 text-zinc-400">
+              Mic input uses browser speech recognition. Replies use {providerHealth?.provider === "xai" ? "Grok/xAI" : providerLabel(providerHealth?.provider)} through Henry IV, then browser speech output.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={refreshProviderHealth}
+            disabled={providerChecking}
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-zinc-500/35 bg-zinc-200/10 text-zinc-100 disabled:opacity-50"
+            aria-label="Refresh voice provider status"
+          >
+            <RefreshCw className="size-4" />
+          </button>
+        </div>
+        <p className={`mt-2 text-xs leading-5 ${providerHealth?.connected ? "text-emerald-100" : "text-amber-100"}`}>
+          {providerHealth?.detail || "Checking AI provider status..."}
+        </p>
       </div>
       <p className="mt-3 text-xs text-zinc-300">Heard: {lastHeard}</p>
       <div className="mt-3 flex gap-2">
@@ -341,10 +400,58 @@ type SpeechRecognitionEventShape = {
 
 type AudioContextConstructor = new () => AudioContext;
 
+type VoiceProvider = "xai" | "gemini" | "openai" | "none";
+
+type VoiceProviderHealth = {
+  connected: boolean;
+  provider: VoiceProvider;
+  detail: string;
+};
+
+type SystemStatusResponse = {
+  aiProvider: VoiceProvider;
+  aiConnected: boolean;
+  xaiConfigured: boolean;
+  xaiConnected: boolean;
+  xaiDetail: string;
+  geminiConfigured: boolean;
+  geminiConnected: boolean;
+  geminiDetail: string;
+  openAiConfigured: boolean;
+  openAiConnected: boolean;
+  openAiDetail: string;
+};
+
 function sttLabel(health: "checking" | "ready" | "blocked" | "degraded", supported: boolean) {
   if (!supported || health === "blocked") return "STT blocked";
   if (health === "degraded") return "STT degraded";
   if (health === "ready") return "STT ready";
 
   return "STT check";
+}
+
+function getActiveProvider(status: SystemStatusResponse): VoiceProvider {
+  if (status.aiProvider !== "none") return status.aiProvider;
+  if (status.xaiConfigured) return "xai";
+  if (status.geminiConfigured) return "gemini";
+  if (status.openAiConfigured) return "openai";
+
+  return "none";
+}
+
+function getProviderDetail(status: SystemStatusResponse, provider: VoiceProvider) {
+  if (status.aiConnected) return `Connected through ${providerLabel(provider)}.`;
+  if (provider === "xai") return status.xaiDetail;
+  if (provider === "gemini") return status.geminiDetail;
+  if (provider === "openai") return status.openAiDetail;
+
+  return "No AI provider key is configured.";
+}
+
+function providerLabel(provider?: string) {
+  if (provider === "xai") return "Grok/xAI";
+  if (provider === "gemini") return "Gemini";
+  if (provider === "openai") return "OpenAI";
+
+  return "No AI";
 }
